@@ -21,10 +21,6 @@ def session_scope():
     finally:
         session.close()
 
-# https://trypyramid.com
-def hello_world(request):
-    return Response('Hello World!')
-
 def add_user(request):
     first_name = request.GET.getone('first_name')
     last_name = request.GET.getone('last_name')
@@ -48,8 +44,6 @@ def get_users(request):
     return Response("<pre>" + "\n".join(map(str, all_users)) + "</pre>")
 
 def addRoutes():
-    config.add_route('hello', '/')
-    config.add_view(hello_world, route_name='hello')
     config.add_route('add_user', '/add_user')
     config.add_view(add_user, route_name='add_user')
     config.add_route('get_users', '/get_users')
