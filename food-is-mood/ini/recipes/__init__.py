@@ -1,13 +1,15 @@
+# food-is-mood
+
 from wsgiref.simple_server import make_server
 from pyramid.config import Configurator
 from pyramid.response import Response
-from engine import User
+from .engine import User, Engine
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from contextlib import contextmanager
 
-engine = create_engine('sqlite:///tmp/test.db', echo=True)
-Session = sessionmaker(bind=engine)
+engine = Engine()
+Session = sessionmaker(bind=engine.get())
 
 @contextmanager
 def session_scope():
@@ -43,17 +45,19 @@ def get_users(request):
 
     return Response("<pre>" + "\n".join(map(str, all_users)) + "</pre>")
 
-def addRoutes():
+def hello_world(request):
+    return Response('Hello World!')
+
+def addRoutes(config):
+    config.add_route('hello_world', '/')
+    config.add_view(hello_world, route_name='hello_world')
     config.add_route('add_user', '/add_user')
     config.add_view(add_user, route_name='add_user')
     config.add_route('get_users', '/get_users')
     config.add_view(get_users, route_name='get_users')
 
-if __name__ == '__main__':
-    with Configurator() as config:
-        addRoutes()
-        app = config.make_wsgi_app()
+def main(global_config, **settings):
+    config = Configurator(settings=settings)
+    addRoutes(config)
     print('Starting server...')
-    server = make_server('0.0.0.0', 6543, app)
-    server.serve_forever()
-
+    return config.make_wsgi_app()

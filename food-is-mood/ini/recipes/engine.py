@@ -2,13 +2,20 @@ from sqlalchemy import create_engine, Column, DateTime, Integer, String, Foreign
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
-engine = create_engine('sqlite:///tmp/test.db', echo=True)
-Base.metadata.create_all(engine)
+
+class Engine():
+    DATABASE_URI = 'sqlite:///tmp/test.db'
+    def __init__(self):
+        self.engine = create_engine(self.DATABASE_URI, echo=True)
+
+    def get(self):
+        return self.engine
 
 # https://docs.sqlalchemy.org/en/13/orm/tutorial.html
 if __name__ == '__main__':
     print('Creating database from engine')
-    Base.metadata.create_all(engine)
+    engine = Engine()
+    Base.metadata.create_all(engine.get())
 
 class User(Base):
     __tablename__ = 'users'

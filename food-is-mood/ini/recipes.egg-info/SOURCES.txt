@@ -1,0 +1,6 @@
+recipes.egg-info/PKG-INFO
+recipes.egg-info/SOURCES.txt
+recipes.egg-info/dependency_links.txt
+recipes.egg-info/entry_points.txt
+recipes.egg-info/requires.txt
+recipes.egg-info/top_level.txt
