@@ -1,3 +1,6 @@
 SQLAlchemy
 pyramid
 waitress
+
+[dev]
+pyramid_debugtoolbar
