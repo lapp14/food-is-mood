@@ -46,7 +46,7 @@ def get_users(request):
     return Response("<pre>" + "\n".join(map(str, all_users)) + "</pre>")
 
 def hello_world(request):
-    return Response('Hello World!')
+    return Response('<h1>Hello World!</h1>')
 
 def addRoutes(config):
     config.add_route('hello_world', '/')

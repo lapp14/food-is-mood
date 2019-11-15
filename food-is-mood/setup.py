@@ -5,7 +5,7 @@ from setuptools import setup
 requires = [
     'pyramid',
     'waitress',
-    'SQLAlchemy'
+    'SQLAlchemy',
 ]
 
 # List of dependencies installed via `pip install -e ".[dev]"`
@@ -14,6 +14,7 @@ requires = [
 dev_requires = [
     'pyramid_debugtoolbar',
     'pytest',
+    'webtest',
 ]
 
 setup(
