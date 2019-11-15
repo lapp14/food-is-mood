@@ -14,3 +14,7 @@ Description of project
   - activate venv with `source venv/bin/activate`
   - run `pserve ./food-is-mood/ini/dev.ini --reload `
   - load [0.0.0.0:6543](http://0.0.0.0:6543/)
+  
+### Running tests
+  - run `pytest food-is-mood/recipes/tests.py`
+

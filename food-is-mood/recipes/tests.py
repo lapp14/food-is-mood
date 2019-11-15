@@ -10,7 +10,7 @@ class TutorialViewTests(unittest.TestCase):
         testing.tearDown()
 
     def test_hello_world(self):
-        from .recipes import hello_world
+        from .__init__ import hello_world
 
         request = testing.DummyRequest()
         response = hello_world(request)
