@@ -10,15 +10,22 @@ class TutorialViewTests(unittest.TestCase):
         testing.tearDown()
 
     def test_hello_world(self):
-        from .__init__ import hello_world
+        from .views import hello_world
 
         request = testing.DummyRequest()
         response = hello_world(request)
         self.assertEqual(response.status_code, 200)
 
+    def test_get_users(self):
+        from .views import get_users
+
+        request = testing.DummyRequest()
+        response = get_users(request)
+        self.assertEqual(response.status_code, 200)
+
 class TutorialFunctionalTests(unittest.TestCase):
     def setUp(self):
-        from .__init__ import main
+        from recipes import main
         app = main({})
         from webtest import TestApp
 
