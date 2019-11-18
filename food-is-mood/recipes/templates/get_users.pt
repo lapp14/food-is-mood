@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Quick Tutorial: ${name}</title>
+  <style>
+    table tr.header { font-weight: bold }
+    table, td { border: 1px solid black }
+    td { padding: 6px }
+  </style>
+</head>
+<body>
+  <h1>All Users</h1>
+  <table>
+    <tr class="header">
+      <td>First Name</td>
+      <td>Last Name</td>
+    </tr>
+    <tr tal:repeat="item users">
+      <td>${item.first_name}</td>
+      <td>${item.last_name}</td>
+    </tr>
+  </table>
+</body>
+</html>

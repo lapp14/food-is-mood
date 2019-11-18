@@ -14,14 +14,7 @@ class TutorialViewTests(unittest.TestCase):
 
         request = testing.DummyRequest()
         response = hello_world(request)
-        self.assertEqual(response.status_code, 200)
-
-    def test_get_users(self):
-        from .views import get_users
-
-        request = testing.DummyRequest()
-        response = get_users(request)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['name'], 'Hello View')
 
 class TutorialFunctionalTests(unittest.TestCase):
     def setUp(self):
@@ -33,4 +26,8 @@ class TutorialFunctionalTests(unittest.TestCase):
 
     def test_hello_world(self):
         res = self.testapp.get('/', status=200)
-        self.assertIn(b'<h1>Hello World!</h1>', res.body)
+        self.assertIn(b'<h1>Hi Hello View</h1>', res.body)
+
+    def test_get_users(self):
+        res = self.testapp.get('/get_users', status=200)
+        self.assertIn(b'<h1>All Users</h1>', res.body)

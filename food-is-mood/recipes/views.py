@@ -36,13 +36,16 @@ def add_user(request):
 
     return Response("<pre>" + "\n".join(map(str, all_users)) + "</pre>")
 
-@view_config(route_name='get_users')
+@view_config(route_name='get_users', renderer='templates/get_users.pt')
 def get_users(request):
     with session_scope() as session:
         all_users = session.query(User.first_name, User.last_name).all()
 
-    return Response("<pre>" + "\n".join(map(str, all_users)) + "</pre>")
+    return {
+        'users': all_users,
+        'name': 'All Users'
+    }
 
-@view_config(route_name='hello_world')
+@view_config(route_name='hello_world', renderer='templates/home.pt')
 def hello_world(request):
-    return Response('<h1>Hello World!</h1>')
+    return {'name': 'Hello View'}
