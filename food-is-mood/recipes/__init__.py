@@ -8,10 +8,11 @@ engine = Engine()
 Session = sessionmaker(bind=engine.get())
 
 def addRoutes(config):
-    config.add_route('hello_world', '/hello')
+    config.add_route('hello_world', '/hello/{first_name}/{last_name}/')
+    config.add_route('hello_world_base', '/hello/')
     config.add_route('home_view', '/')
-    config.add_route('add_user', '/add_user')
-    config.add_route('get_users', '/get_users')
+    config.add_route('add_user', '/add_user/')
+    config.add_route('get_users', '/get_users/')
     config.scan('.views')
 
 def main(global_config, **settings):

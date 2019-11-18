@@ -53,8 +53,26 @@ class TutorialViews:
 
     @view_config(route_name='hello_world')
     def hello_world(self):
-        return {'name': 'Hello View'}
+        first_name = self.request.matchdict['first_name']
+        last_name = self.request.matchdict['last_name']
+        return {
+            'name': 'Hello View',
+            'first_name': first_name,
+            'last_name': last_name
+        }
+
+    @view_config(route_name='hello_world_base')
+    def hello_world_base(self):
+        return {
+            'name': 'Hello View',
+            'first_name': '',
+            'last_name': ''
+        }
 
     @view_config(route_name='home_view')
     def home_view(self):
-        return {'name': 'Home View'}
+        return {
+            'name': 'Home View',
+            'first_name': '',
+            'last_name': ''
+        }
