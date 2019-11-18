@@ -2,7 +2,7 @@ from contextlib import contextmanager
 from .engine import User, Engine
 from sqlalchemy.orm import sessionmaker
 from pyramid.response import Response
-from pyramid.view import view_config
+from pyramid.view import view_config, view_defaults
 
 engine = Engine()
 Session = sessionmaker(bind=engine.get())
@@ -46,6 +46,15 @@ def get_users(request):
         'name': 'All Users'
     }
 
-@view_config(route_name='hello_world', renderer='templates/home.pt')
-def hello_world(request):
-    return {'name': 'Hello View'}
+@view_defaults(renderer='templates/home.pt')
+class TutorialViews:
+    def __init__(self, request):
+        self.request = request
+
+    @view_config(route_name='hello_world')
+    def hello_world(self):
+        return {'name': 'Hello View'}
+
+    @view_config(route_name='home_view')
+    def home_view(self):
+        return {'name': 'Home View'}
