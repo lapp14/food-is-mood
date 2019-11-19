@@ -17,7 +17,7 @@ def addRoutes(config):
 
 def main(global_config, **settings):
     config = Configurator(settings=settings)
-    config.include('pyramid_chameleon')
+    config.include('pyramid_jinja2')
     addRoutes(config)
     print('Starting server...')
     return config.make_wsgi_app()

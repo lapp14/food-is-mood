@@ -36,7 +36,7 @@ def add_user(request):
 
     return Response("<pre>" + "\n".join(map(str, all_users)) + "</pre>")
 
-@view_config(route_name='get_users', renderer='templates/get_users.pt')
+@view_config(route_name='get_users', renderer='templates/get_users.jinja2')
 def get_users(request):
     with session_scope() as session:
         all_users = session.query(User.first_name, User.last_name).all()
@@ -46,7 +46,7 @@ def get_users(request):
         'name': 'All Users'
     }
 
-@view_defaults(renderer='templates/home.pt')
+@view_defaults(renderer='templates/home.jinja2')
 class TutorialViews:
     def __init__(self, request):
         self.request = request

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Quick Tutorial: ${name}</title>
+  <title>Quick Tutorial: {{name}}</title>
   <style>
     table tr.header { font-weight: bold }
     table, td { border: 1px solid black }
@@ -15,10 +15,12 @@
       <td>First Name</td>
       <td>Last Name</td>
     </tr>
-    <tr tal:repeat="item users">
-      <td>${item.first_name}</td>
-      <td>${item.last_name}</td>
+    {% for item in users %}
+    <tr>
+      <td>{{item.first_name}}</td>
+      <td>{{item.last_name}}</td>
     </tr>
+    {% endfor %}
   </table>
 </body>
 </html>
