@@ -1,10 +1,12 @@
 # food-is-mood
 
 from pyramid.config import Configurator
+from pyramid.session import SignedCookieSessionFactory
 from sqlalchemy.orm import sessionmaker
 from .engine import User, Engine
 from .views import http_route_notfound
 
+COOKIE_SECRET = 'canyouf33litinth3airt0night?!'  # TODO: reset and remove this later
 engine = Engine()
 Session = sessionmaker(bind=engine.get())
 
@@ -18,7 +20,11 @@ def addRoutes(config):
     config.scan('.views')
 
 def main(global_config, **settings):
-    config = Configurator(settings=settings)
+    session_factory = SignedCookieSessionFactory(
+        secret='COOKIE_SECRET',
+        cookie_name='food-is-mood',
+    )
+    config = Configurator(settings=settings, session_factory=session_factory)
     config.include('pyramid_jinja2')
     config.add_static_view(name='static', path='recipes:static')
     config.add_notfound_view(http_route_notfound, append_slash=True)

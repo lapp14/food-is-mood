@@ -51,12 +51,19 @@ def add_user(request):
 @view_config(route_name='get_users', renderer='templates/get_users.jinja2')
 @view_config(route_name='get_users_json', renderer='json')
 def get_users(request):
+    cookie = request.session
+    if 'counter' in cookie:
+        cookie['counter'] += 1
+    else:
+        cookie['counter'] = 1
+
     with session_scope() as session:
         all_users = session.query(User.first_name, User.last_name).all()
 
     return {
         'users': all_users,
-        'name': 'All Users'
+        'name': 'All Users',
+        'counter': cookie['counter'],
     }
 
 @view_defaults(renderer='templates/home.jinja2')
