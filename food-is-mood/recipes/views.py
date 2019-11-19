@@ -1,5 +1,8 @@
 import logging
 from contextlib import contextmanager
+
+from pyramid.httpexceptions import HTTPNotFound
+
 from .engine import User, Engine
 from sqlalchemy.orm import sessionmaker
 from pyramid.response import Response
@@ -22,6 +25,10 @@ def session_scope():
         raise
     finally:
         session.close()
+
+
+def http_route_notfound(request):
+    return HTTPNotFound()
 
 @view_config(route_name='add_user')
 def add_user(request):

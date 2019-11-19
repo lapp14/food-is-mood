@@ -1,8 +1,9 @@
 # food-is-mood
 
 from pyramid.config import Configurator
-from .engine import User, Engine
 from sqlalchemy.orm import sessionmaker
+from .engine import User, Engine
+from .views import http_route_notfound
 
 engine = Engine()
 Session = sessionmaker(bind=engine.get())
@@ -20,6 +21,7 @@ def main(global_config, **settings):
     config = Configurator(settings=settings)
     config.include('pyramid_jinja2')
     config.add_static_view(name='static', path='recipes:static')
+    config.add_notfound_view(http_route_notfound, append_slash=True)
     addRoutes(config)
     print('Starting server...')
     return config.make_wsgi_app()

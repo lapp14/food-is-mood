@@ -45,3 +45,7 @@ class TutorialFunctionalTests(unittest.TestCase):
     def test_get_users(self):
         res = self.testapp.get('/get_users/', status=200)
         self.assertIn(b'<h1>All Users</h1>', res.body)
+
+    def test_get_users_without_trailing_slash_should_redirect(self):
+        res = self.testapp.get('/get_users', status=307)
+        self.assertTrue(res.location.endswith('/get_users/'))
