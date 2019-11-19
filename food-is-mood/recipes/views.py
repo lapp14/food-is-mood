@@ -1,9 +1,11 @@
+import logging
 from contextlib import contextmanager
 from .engine import User, Engine
 from sqlalchemy.orm import sessionmaker
 from pyramid.response import Response
 from pyramid.view import view_config, view_defaults
 
+log = logging.getLogger(__name__)
 engine = Engine()
 Session = sessionmaker(bind=engine.get())
 
@@ -11,9 +13,11 @@ Session = sessionmaker(bind=engine.get())
 def session_scope():
     session = Session()
     try:
+        log.debug('session_scope(): trying session')
         yield session
         session.commit()
     except:
+        log.error('session_scope(): rolling back session')
         session.rollback()
         raise
     finally:
@@ -30,6 +34,7 @@ def add_user(request):
         new_user = session.query(User).filter_by(first_name=first_name, last_name=last_name).first()
 
         if new_user is user:
+            log.debug('add_user(): New user added, {new_user}'.format(new_user=new_user))
             print('New user added, {new_user}'.format(new_user=new_user))
 
         all_users = session.query(User.first_name, User.last_name).all()
