@@ -13,11 +13,13 @@ def addRoutes(config):
     config.add_route('home_view', '/')
     config.add_route('add_user', '/add_user/')
     config.add_route('get_users', '/get_users/')
+    config.add_route('get_users_json', '/get_users.json')
     config.scan('.views')
 
 def main(global_config, **settings):
     config = Configurator(settings=settings)
     config.include('pyramid_jinja2')
+    config.add_static_view(name='static', path='recipes:static')
     addRoutes(config)
     print('Starting server...')
     return config.make_wsgi_app()

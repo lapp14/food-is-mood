@@ -1,0 +1,4 @@
+body { background: #1b6d85 }
+table tr.header { font-weight: bold }
+table, td { border: 1px solid black }
+td { padding: 6px }

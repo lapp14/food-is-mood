@@ -37,6 +37,7 @@ def add_user(request):
     return Response("<pre>" + "\n".join(map(str, all_users)) + "</pre>")
 
 @view_config(route_name='get_users', renderer='templates/get_users.jinja2')
+@view_config(route_name='get_users_json', renderer='json')
 def get_users(request):
     with session_scope() as session:
         all_users = session.query(User.first_name, User.last_name).all()
