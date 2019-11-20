@@ -1,4 +1,5 @@
 SQLAlchemy
+deform
 pyramid
 pyramid_jinja2
 waitress

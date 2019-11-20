@@ -1,4 +1,4 @@
-import logging
+import logging, colander, deform.widget
 from contextlib import contextmanager
 
 from pyramid.httpexceptions import HTTPNotFound
@@ -6,6 +6,7 @@ from pyramid.httpexceptions import HTTPNotFound
 from .engine import User, Engine
 from sqlalchemy.orm import sessionmaker
 from pyramid.response import Response
+from pyramid.httpexceptions import HTTPFound
 from pyramid.view import view_config, view_defaults
 
 log = logging.getLogger(__name__)
@@ -66,33 +67,121 @@ def get_users(request):
         'counter': cookie['counter'],
     }
 
-@view_defaults(renderer='templates/home.jinja2')
-class TutorialViews:
+pages = {
+    '100': dict(
+        uid='100',
+        title='Page 100',
+        body='<em>100</em>',
+        steps=[
+            'One',
+            'Two',
+            'Three',
+            'Four'
+        ]
+    ),
+    '101': dict(
+        uid='101',
+        title='Page 101',
+        body='<em>101</em>',
+        steps=[
+            'One',
+            'Two'
+        ]
+    ),
+    '102': dict(
+        uid='102',
+        title='Page 102',
+        body='<em>102</em>',
+        steps=[
+            'One',
+            'Two',
+            'Three',
+            'Four',
+            'Five',
+            'Six',
+            'Seven',
+            'Eight'
+        ]
+    )
+}
+
+class RecipePage(colander.MappingSchema):
+    title = colander.SchemaNode(colander.String())
+    body = colander.SchemaNode(
+        colander.String(),
+        widget=deform.widget.RichTextWidget()
+    )
+
+class RecipeViews(object):
     def __init__(self, request):
         self.request = request
 
-    @view_config(route_name='hello_world')
-    def hello_world(self):
-        first_name = self.request.matchdict['first_name']
-        last_name = self.request.matchdict['last_name']
-        return {
-            'name': 'Hello View',
-            'first_name': first_name,
-            'last_name': last_name
-        }
+    @property
+    def recipe_form(self):
+        schema = RecipePage()
+        return deform.Form(schema, buttons=('submit',))
 
-    @view_config(route_name='hello_world_base')
-    def hello_world_base(self):
-        return {
-            'name': 'Hello View',
-            'first_name': '',
-            'last_name': ''
-        }
+    @property
+    def reqts(self):
+        return self.recipe_form.get_widget_resources()
 
-    @view_config(route_name='home_view')
+    @view_config(route_name='home_view', renderer='templates/home_view.jinja2')
     def home_view(self):
-        return {
-            'name': 'Home View',
-            'first_name': '',
-            'last_name': ''
-        }
+        return dict(pages=pages.values())
+
+    @view_config(route_name='recipe_add', renderer='templates/recipe_add_edit.jinja2')
+    def recipe_add(self):
+        form = self.recipe_form.render()
+
+        if 'submit' in self.request.params:
+            controls = self.request.POST.items()
+            try:
+                appstruct = self.recipe_form.validate(controls)
+            except deform.ValidationFailure as e:
+                # Form is NOT valid
+                return dict(form=e.render())
+
+            # Form is valid, make a new identifier and add to list
+            last_uid = int(sorted(pages.keys())[-1])
+            new_uid = str(last_uid + 1)
+            pages[new_uid] = dict(
+                uid=new_uid, title=appstruct['title'],
+                body=appstruct['body']
+            )
+
+            # Now visit new page
+            url = self.request.route_url('recipe_view', uid=new_uid)
+            return HTTPFound(url)
+
+        return dict(form=form)
+
+    @view_config(route_name='recipe_view', renderer='templates/recipe_view.jinja2')
+    def recipe_view(self):
+        uid = self.request.matchdict['uid']
+        page = pages[uid]
+        return dict(page=page)
+
+    @view_config(route_name='recipe_edit', renderer='templates/recipe_add_edit.jinja2')
+    def recipe_edit(self):
+        uid = self.request.matchdict['uid']
+        page = pages[uid]
+
+        recipe_form = self.recipe_form
+
+        if 'submit' in self.request.params:
+            controls = self.request.POST.items()
+            try:
+                appstruct = recipe_form.validate(controls)
+            except deform.ValidationFailure as e:
+                return dict(page=page, form=e.render())
+
+            # Change the content and redirect to the view
+            page['title'] = appstruct['title']
+            page['body'] = appstruct['body']
+
+            url = self.request.route_url('recipe_view', uid=page['uid'])
+            return HTTPFound(url)
+
+        form = recipe_form.render(page)
+
+        return dict(page=page, form=form)

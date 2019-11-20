@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Wiki: View</title>
+</head>
+<body>
+<h1>Wiki</h1>
+
+<a href="{{request.route_url('recipe_add')}}">Add
+    WikiPage</a>
+<ul>
+    {% for page in pages %}
+    <li>
+        <a href="{{request.route_url('recipe_view', uid=page.uid)}}">
+                {{page.title}}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+</body>
+</html>
