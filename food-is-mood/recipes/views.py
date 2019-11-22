@@ -1,13 +1,14 @@
-import logging, colander, deform.widget
+import logging, deform.widget
 from contextlib import contextmanager
 
 from pyramid.httpexceptions import HTTPNotFound
 
+from recipes.schema import RecipePage
 from .engine import User, Engine
 from sqlalchemy.orm import sessionmaker
 from pyramid.response import Response
+from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
-from pyramid.view import view_config, view_defaults
 
 log = logging.getLogger(__name__)
 engine = Engine()
@@ -71,46 +72,37 @@ pages = {
     '100': dict(
         uid='100',
         title='Page 100',
-        body='<em>100</em>',
+        description='<em>100</em>',
         steps=[
-            'One',
-            'Two',
-            'Three',
-            'Four'
+            (1, 'Prep potatoes and vegetables'),
+            (2, 'Cook chicken'),
+            (3, 'Make potatoes'),
+            (4, 'Finish vegetables')
         ]
     ),
     '101': dict(
         uid='101',
         title='Page 101',
-        body='<em>101</em>',
+        description='<em>101</em>',
         steps=[
-            'One',
-            'Two'
+            (1, 'Prep potatoes and vegetables'),
+            (2, 'Cook chicken'),
         ]
     ),
     '102': dict(
         uid='102',
         title='Page 102',
-        body='<em>102</em>',
+        description='<em>102</em>',
         steps=[
-            'One',
-            'Two',
-            'Three',
-            'Four',
-            'Five',
-            'Six',
-            'Seven',
-            'Eight'
+            (1, 'Prep potatoes and vegetables'),
+            (2, 'Cook chicken'),
+            (3, 'Make potatoes'),
+            (4, 'Finish vegetables'),
+            (5, 'Step 5'),
+            (6, 'Step 6'),
         ]
     )
 }
-
-class RecipePage(colander.MappingSchema):
-    title = colander.SchemaNode(colander.String())
-    body = colander.SchemaNode(
-        colander.String(),
-        widget=deform.widget.RichTextWidget()
-    )
 
 class RecipeViews(object):
     def __init__(self, request):
@@ -146,7 +138,7 @@ class RecipeViews(object):
             new_uid = str(last_uid + 1)
             pages[new_uid] = dict(
                 uid=new_uid, title=appstruct['title'],
-                body=appstruct['body']
+                description=appstruct['description']
             )
 
             # Now visit new page
@@ -177,7 +169,7 @@ class RecipeViews(object):
 
             # Change the content and redirect to the view
             page['title'] = appstruct['title']
-            page['body'] = appstruct['body']
+            page['description'] = appstruct['description']
 
             url = self.request.route_url('recipe_view', uid=page['uid'])
             return HTTPFound(url)
@@ -185,3 +177,4 @@ class RecipeViews(object):
         form = recipe_form.render(page)
 
         return dict(page=page, form=form)
+
