@@ -1,38 +1,53 @@
-import unittest
-
+import unittest, transaction
 from pyramid import testing
 
-class TutorialViewTests(unittest.TestCase):
+def _initTestingDB():
+    from sqlalchemy import create_engine
+    from .models import (
+        DBSession,
+        Page,
+        Base
+        )
+    engine = create_engine('sqlite://')
+    Base.metadata.create_all(engine)
+    DBSession.configure(bind=engine)
+    with transaction.manager:
+        model = Page(title='FrontPage', body='This is the front page')
+        DBSession.add(model)
+    return DBSession
+
+class ViewTests(unittest.TestCase):
     def setUp(self):
+        self.session = _initTestingDB()
         self.config = testing.setUp()
 
     def tearDown(self):
+        self.session.remove()
         testing.tearDown()
 
-    def test_hello_world(self):
-        from .views import TutorialViews
-        request = testing.DummyRequest()
-        request.matchdict['first_name'] = 'First'
-        request.matchdict['last_name'] = 'Last'
-        inst = TutorialViews(request)
-        response = inst.hello_world()
-        self.assertEqual(response['first_name'], 'First')
-        self.assertEqual(response['last_name'], 'Last')
+    def test_recipe_view(self):
+        # from .views import RecipeViews
+        # inst = RecipeViews(request)
+        # response = inst.hello_world()
+        pass
 
     def test_home_view(self):
-        from .views import TutorialViews
+        from .views import RecipeViews
         request = testing.DummyRequest()
-        inst = TutorialViews(request)
+        inst = RecipeViews(request)
         response = inst.home_view()
         self.assertEqual(response['name'], 'Home View')
 
-class TutorialFunctionalTests(unittest.TestCase):
+class FunctionalTests(unittest.TestCase):
     def setUp(self):
-        from recipes import main
-        app = main({})
+        from pyramid.paster import get_app
+        app = get_app('development.ini')
         from webtest import TestApp
-
         self.testapp = TestApp(app)
+
+    def tearDown(self):
+        from .models import DBSession
+        DBSession.remove()
 
     def test_hello_world(self):
         res = self.testapp.get('/hello/', status=200)
