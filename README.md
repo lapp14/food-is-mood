@@ -8,7 +8,8 @@ Description of project
   - pip install -e ./food-is-mood/ini/
   
 ### Initialize test SQLite database
-  - run `python engine.py` to create database and tables
+  - cd to `./food-is-mood/food-is-mood/`
+  - run `initialize_recipes_db dev.ini` to create database and tables
 
 ### Running dev server
   - activate venv with `source venv/bin/activate`

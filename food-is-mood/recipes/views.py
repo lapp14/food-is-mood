@@ -5,6 +5,7 @@ from pyramid.httpexceptions import HTTPNotFound
 
 from recipes.schema import RecipePage
 from .engine import User, Engine
+from .models import DBSession, Page
 from sqlalchemy.orm import sessionmaker
 from pyramid.response import Response
 from pyramid.view import view_config
@@ -119,7 +120,8 @@ class RecipeViews(object):
 
     @view_config(route_name='home_view', renderer='templates/home_view.jinja2')
     def home_view(self):
-        return dict(pages=pages.values())
+        pages = DBSession.query(Page).order_by(Page.title)
+        return dict(title='Home View', pages=pages)
 
     @view_config(route_name='recipe_add', renderer='templates/recipe_add_edit.jinja2')
     def recipe_add(self):
@@ -133,13 +135,12 @@ class RecipeViews(object):
                 # Form is NOT valid
                 return dict(form=e.render())
 
-            # Form is valid, make a new identifier and add to list
-            last_uid = int(sorted(pages.keys())[-1])
-            new_uid = str(last_uid + 1)
-            pages[new_uid] = dict(
-                uid=new_uid, title=appstruct['title'],
-                description=appstruct['description']
-            )
+            new_title = appstruct['title']
+            new_body = appstruct['description']
+            DBSession.add(Page(title=new_title, description=new_body))
+
+            page = DBSession.query(Page).filter_by(title=new_title).one()
+            new_uid = page.uid
 
             # Now visit new page
             url = self.request.route_url('recipe_view', uid=new_uid)
@@ -149,14 +150,14 @@ class RecipeViews(object):
 
     @view_config(route_name='recipe_view', renderer='templates/recipe_view.jinja2')
     def recipe_view(self):
-        uid = self.request.matchdict['uid']
-        page = pages[uid]
+        uid = int(self.request.matchdict['uid'])
+        page = DBSession.query(Page).filter_by(uid=uid).one()
         return dict(page=page)
 
     @view_config(route_name='recipe_edit', renderer='templates/recipe_add_edit.jinja2')
     def recipe_edit(self):
-        uid = self.request.matchdict['uid']
-        page = pages[uid]
+        uid = int(self.request.matchdict['uid'])
+        page = DBSession.query(Page).filter_by(uid=uid).one()
 
         recipe_form = self.recipe_form
 
@@ -168,13 +169,18 @@ class RecipeViews(object):
                 return dict(page=page, form=e.render())
 
             # Change the content and redirect to the view
+            print(appstruct['title'])
+            print(appstruct['description'])
             page['title'] = appstruct['title']
             page['description'] = appstruct['description']
-
-            url = self.request.route_url('recipe_view', uid=page['uid'])
+            url = self.request.route_url('recipe_view', uid=uid)
             return HTTPFound(url)
 
-        form = recipe_form.render(page)
+        form = recipe_form.render(
+            uid=page.uid,
+            title=page.title,
+            description=page.description,
+        )
 
         return dict(page=page, form=form)
 

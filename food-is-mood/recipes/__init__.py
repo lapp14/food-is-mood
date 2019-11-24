@@ -2,13 +2,12 @@
 
 from pyramid.config import Configurator
 from pyramid.session import SignedCookieSessionFactory
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import engine_from_config
 from .engine import User, Engine
 from .views import http_route_notfound
+from .models import DBSession, Base
 
 COOKIE_SECRET = 'canyouf33litinth3airt0night?!'  # TODO: reset and remove this later
-engine = Engine()
-Session = sessionmaker(bind=engine.get())
 
 def addRoutes(config):
     config.add_route('home_view', '/')
@@ -21,11 +20,16 @@ def addRoutes(config):
     config.scan('.views')
 
 def main(global_config, **settings):
+    engine = engine_from_config(settings, 'sqlalchemy.')
+    DBSession.configure(bind=engine)
+    Base.metadata.bind = engine
+    config = Configurator(settings=settings, root_factory='recipes.models.Root')
+    config.include('pyramid_chameleon')
     session_factory = SignedCookieSessionFactory(
         secret='COOKIE_SECRET',
         cookie_name='food-is-mood',
     )
-    config = Configurator(settings=settings, session_factory=session_factory)
+    #config = Configurator(settings=settings, session_factory=session_factory)
     config.include('pyramid_jinja2')
     config.add_static_view(name='static', path='recipes:static')
     config.add_static_view('deform_static', 'deform:static/')

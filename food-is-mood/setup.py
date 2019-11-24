@@ -6,8 +6,10 @@ requires = [
     'deform',
     'pyramid',
     'pyramid_jinja2',
+    'pyramid_tm',
+    'sqlalchemy',
     'waitress',
-    'SQLAlchemy',
+    'zope.sqlalchemy',
 ]
 
 # List of dependencies installed via `pip install -e ".[dev]"`
@@ -28,6 +30,9 @@ setup(
     entry_points={
         'paste.app_factory': [
             'main = recipes:main'
+        ],
+        'console_scripts': [
+            'initialize_recipes_db = recipes.initialize_db:main'
         ],
     },
 )
