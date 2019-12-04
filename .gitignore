@@ -2,5 +2,5 @@
 venv/
 tmp/
 __pycache__/
-food-is-mood/sqltutorial.sqlite
+food-is-mood/recipes.sqlite
 

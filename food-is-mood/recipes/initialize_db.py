@@ -7,9 +7,9 @@ from pyramid.paster import (
 
 from .models import (
     DBSession,
-    Page,
+    Recipe,
     Base,
-    )
+    RecipeStep, RecipeIngredient)
 
 
 def usage(argv):
@@ -29,5 +29,10 @@ def main(argv=sys.argv):
     DBSession.configure(bind=engine)
     Base.metadata.create_all(engine)
     with transaction.manager:
-        model = Page(title='Root', description='<p>Root</p>')
+        model = Recipe(title='Root', description='<p>Root</p>')
+        model.steps.append(RecipeStep(rank=1, step="wash vegetables"))
+        model.steps.append(RecipeStep(rank=2, step="boil water"))
+        model.ingredients.append(RecipeIngredient(ingredient="Broccoli", shopping_list=True))
+        model.ingredients.append(RecipeIngredient(ingredient="Carrots (2)", shopping_list=True))
+        model.ingredients.append(RecipeIngredient(ingredient="Pasta Sauce (1 jar)", shopping_list=True))
         DBSession.add(model)

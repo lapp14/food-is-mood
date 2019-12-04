@@ -5,9 +5,6 @@ class RecipeIngredient(colander.TupleSchema):
     ingredient = colander.SchemaNode(colander.String())
     shopping_list = colander.SchemaNode(colander.Boolean())
 
-class RecipeRating(colander.TupleSchema):
-    rank = colander.SchemaNode(colander.Int(), validator=colander.Range(1, 5))
-
 class RecipeStep(colander.TupleSchema):
     rank = colander.SchemaNode(colander.Int(), validator=colander.Range(0, 9999))
     step = colander.SchemaNode(colander.String())
@@ -32,5 +29,5 @@ class RecipePage(colander.MappingSchema):
     )
     ingredients = RecipeIngredients()
     steps = RecipeSteps()
-    rank = RecipeRating()
+    rank = colander.SchemaNode(colander.Int(), validator=colander.Range(1, 5))
     tags = RecipeTags()

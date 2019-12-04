@@ -5,7 +5,7 @@ from pyramid.httpexceptions import HTTPNotFound
 
 from recipes.schema import RecipePage
 from .engine import User, Engine
-from .models import DBSession, Page
+from .models import DBSession, Recipe, RecipeStep, RecipeIngredient
 from sqlalchemy.orm import sessionmaker
 from pyramid.response import Response
 from pyramid.view import view_config
@@ -120,8 +120,8 @@ class RecipeViews(object):
 
     @view_config(route_name='home_view', renderer='templates/home_view.jinja2')
     def home_view(self):
-        pages = DBSession.query(Page).order_by(Page.title)
-        return dict(title='Home View', pages=pages)
+        recipes = DBSession.query(Recipe).order_by(Recipe.title)
+        return dict(title='Home View', pages=recipes)
 
     @view_config(route_name='recipe_add', renderer='templates/recipe_add_edit.jinja2')
     def recipe_add(self):
@@ -137,9 +137,9 @@ class RecipeViews(object):
 
             new_title = appstruct['title']
             new_body = appstruct['description']
-            DBSession.add(Page(title=new_title, description=new_body))
+            DBSession.add(Recipe(title=new_title, description=new_body))
 
-            page = DBSession.query(Page).filter_by(title=new_title).one()
+            page = DBSession.query(Recipe).filter_by(title=new_title).one()
             new_uid = page.uid
 
             # Now visit new page
@@ -151,13 +151,13 @@ class RecipeViews(object):
     @view_config(route_name='recipe_view', renderer='templates/recipe_view.jinja2')
     def recipe_view(self):
         uid = int(self.request.matchdict['uid'])
-        page = DBSession.query(Page).filter_by(uid=uid).one()
-        return dict(page=page)
+        recipe = DBSession.query(Recipe).filter_by(uid=uid).one()
+        return dict(page=recipe)
 
     @view_config(route_name='recipe_edit', renderer='templates/recipe_add_edit.jinja2')
     def recipe_edit(self):
         uid = int(self.request.matchdict['uid'])
-        page = DBSession.query(Page).filter_by(uid=uid).one()
+        recipe = DBSession.query(Recipe).filter_by(uid=uid).one()
 
         recipe_form = self.recipe_form
 
@@ -166,21 +166,49 @@ class RecipeViews(object):
             try:
                 appstruct = recipe_form.validate(controls)
             except deform.ValidationFailure as e:
-                return dict(page=page, form=e.render())
+                return dict(page=recipe, form=e.render())
 
             # Change the content and redirect to the view
+            print('APPSTRUCT/.....................')
             print(appstruct['title'])
             print(appstruct['description'])
-            page['title'] = appstruct['title']
-            page['description'] = appstruct['description']
+            print(appstruct['ingredients'])
+            print(appstruct['steps'])
+            recipe['title'] = appstruct['title']
+            recipe['description'] = appstruct['description']
+
+            for ingredient in appstruct['ingredients']:
+                recipe.ingredients.append(RecipeIngredient(
+                    ingredient=ingredient[1],
+                    shopping_list=ingredient[2],
+                ))
+
+            for step in appstruct['steps']:
+                recipe.steps.append(RecipeStep(
+                    rank=step[0],
+                    step=step[1]
+                ))
+
+            recipe['rank'] = int(appstruct['rank'])
             url = self.request.route_url('recipe_view', uid=uid)
             return HTTPFound(url)
 
-        form = recipe_form.render(
-            uid=page.uid,
-            title=page.title,
-            description=page.description,
-        )
+        appstruct = {
+            'title': recipe.title,
+            'description': recipe.description,
+            'steps': [(step.rank, step.step) for step in recipe.steps],
+            'ingredients': [(ingredient.recipe_id,
+                             ingredient.ingredient,
+                             ingredient.shopping_list)
+                            for ingredient in recipe.ingredients],
+            'tags': recipe.tags,
+        }
 
-        return dict(page=page, form=form)
+        if recipe.rank is not None:
+            appstruct['rank'] = recipe.rank
+
+        form = recipe_form.render(appstruct)
+
+
+        return dict(recipe=recipe, form=form)
 
