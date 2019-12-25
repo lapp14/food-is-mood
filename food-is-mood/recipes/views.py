@@ -169,20 +169,17 @@ class RecipeViews(object):
                 return dict(page=recipe, form=e.render())
 
             # Change the content and redirect to the view
-            print('APPSTRUCT/.....................')
-            print(appstruct['title'])
-            print(appstruct['description'])
-            print(appstruct['ingredients'])
-            print(appstruct['steps'])
             recipe['title'] = appstruct['title']
             recipe['description'] = appstruct['description']
 
+            recipe.ingredients.clear()
             for ingredient in appstruct['ingredients']:
                 recipe.ingredients.append(RecipeIngredient(
                     ingredient=ingredient[1],
                     shopping_list=ingredient[2],
                 ))
 
+            recipe.steps.clear()
             for step in appstruct['steps']:
                 recipe.steps.append(RecipeStep(
                     rank=step[0],
