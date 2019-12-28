@@ -1,0 +1,12 @@
+<nav>
+    <a href="/" class="header">Food is Mood</a>
+    <ul>
+        {% for link in links %}
+          {% if link.uid %}
+            <li><a href="{{ request.route_url(link.route_name, uid=link.uid) }}">{{ link.title }}</a></li>
+          {% else %}
+            <li><a href="{{ request.route_url(link.route_name) }}">{{ link.title }}</a></li>
+          {% endif %}
+        {% endfor %}
+    </ul>
+</nav>

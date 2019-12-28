@@ -91,12 +91,17 @@ class RecipeViews(object):
     @view_config(route_name="home_view", renderer="templates/home_view.jinja2")
     def home_view(self):
         recipes = DBSession.query(Recipe).order_by(Recipe.title)
-        return dict(title="Home View", pages=recipes)
+        links = [
+            {
+                'title': 'Add a Recipe',
+                'route_name': 'recipe_add'
+            }
+        ]
+        return dict(title="Home View", pages=recipes, links=links)
 
     @view_config(route_name="recipe_add", renderer="templates/recipe_add_edit.jinja2")
     def recipe_add(self):
         form = self.recipe_form.render()
-
         if "submit" in self.request.params:
             controls = self.request.POST.items()
             try:
@@ -122,7 +127,18 @@ class RecipeViews(object):
     def recipe_view(self):
         uid = int(self.request.matchdict["uid"])
         recipe = DBSession.query(Recipe).filter_by(uid=uid).one()
-        return dict(page=recipe)
+        links = [
+            {
+                'title': 'Edit This',
+                'route_name': 'recipe_edit',
+                'uid': uid
+            },
+            {
+                'title': 'Add a Recipe',
+                'route_name': 'recipe_add'
+            },
+        ]
+        return dict(page=recipe, links=links)
 
     @view_config(route_name="recipe_edit", renderer="templates/recipe_add_edit.jinja2")
     def recipe_edit(self):
