@@ -152,8 +152,8 @@ class RecipeViews(object):
                 )
 
             recipe.steps.clear()
-            for step in appstruct["steps"]:
-                recipe.steps.append(RecipeStep(rank=step[0], step=step[1]))
+            for index, step in enumerate(appstruct["steps"]):
+                recipe.steps.append(RecipeStep(rank=index, step=step["step"]))
 
             # recipe.tags.clear()
             # for tag in appstruct['tags']:
@@ -166,7 +166,7 @@ class RecipeViews(object):
         appstruct = {
             "title": recipe.title,
             "description": recipe.description,
-            "steps": [(step.rank, step.step) for step in recipe.steps],
+            "steps": [{"step": step.step} for step in recipe.steps],
             "ingredients": [
                 {
                     "ingredient": ingredient.ingredient,
