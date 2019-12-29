@@ -3,32 +3,27 @@
 <head>
     <link rel="shortcut icon" href="{{request.static_url('recipes:static/favicon.ico')}}" />
     <link rel="stylesheet" href="{{request.static_url('recipes:static/app.css')}}"/>
-    <title>WikiPage: View</title>
+    <title>Food is Mood - {{ page.title }}</title>
 </head>
 <body>
   {% include 'components/nav.jinja2' %}
 
-
-<h1>{{page.title}}</h1>
-<p>{{page.description|safe}}</p>
-<p>Rank: {{ page.rank }}</p>
-<h2>Ingredients</h2>
-<ul>
-{% for ingredient in page.ingredients %}
-  <li>{{ingredient.ingredient}}</li>
-{% endfor %}
-</ul>
-<h2>Steps</h2>
-<ul>
-{% for step in page.steps %}
-  <li>{{step.step}}</li>
-{% endfor %}
-</ul>
-<h3>Tags</h3>
-<ul>
-{% for tag in page.tags %}
-  <li>{{tag.tag}}</li>
-{% endfor %}
-</ul>
+  <div class="content">
+    <h1 class="recipe-title">{{page.title}}</h1>
+    <span class="recipe-ranking">{% for star in range(page.rank) %}* {% endfor %}</span>
+    <p>{{page.description|safe}}</p>
+    <h2>Ingredients</h2>
+    <ul class="ingredients">
+    {% for ingredient in page.ingredients %}
+      <li>{{ingredient.ingredient}}</li>
+    {% endfor %}
+    </ul>
+    <h2>Steps</h2>
+    <ol class="steps">
+    {% for step in page.steps %}
+      <li>{{step.step}}</li>
+    {% endfor %}
+    </ol>
+  </div>
 </body>
 </html>

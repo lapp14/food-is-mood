@@ -1,5 +1,8 @@
 @import url('https://fonts.googleapis.com/css?family=Pacifico&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Work+Sans&display=swap');
+
 body {
+  font-family: 'Work Sans', sans-serif;
   padding: 0;
   margin: 0;
 }
@@ -34,4 +37,35 @@ nav ul {
 
 nav ul li {
   display: inline-block;
+}
+
+div.content {
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+h1.recipe-title {
+  display: inline-block;
+}
+
+span.recipe-ranking {
+  margin-left: 2rem;
+}
+
+ul.ingredients {
+  list-style-type: none;
+  padding: 0;
+  border-collapse: collapse;
+  width: 21rem;
+  border: 1px solid black;
+  border-bottom: none;
+}
+
+ul.ingredients li {
+  padding: 0.75rem 0.75rem;
+  border-bottom: 1px solid black;
+}
+
+ol.steps {
+
 }
