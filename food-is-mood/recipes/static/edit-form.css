@@ -5,3 +5,9 @@ div.panel-heading {
 input.form-control {
 
 }
+
+.item-shopping_list label, .item-shopping_list div.checkbox {
+  display: inline-block;
+}
+
+div.form-group.item-ingredient.item-ingredient {}
