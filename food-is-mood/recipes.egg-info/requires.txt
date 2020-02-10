@@ -1,4 +1,6 @@
+alembic
 deform
+psycopg2-binary
 pyramid
 pyramid_jinja2
 pyramid_tm

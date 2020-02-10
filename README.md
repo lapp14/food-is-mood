@@ -5,12 +5,37 @@ Description of project
   - install python3-venv
   - python3 -m venv venv
   - activate venv with `source venv/bin/activate`
-  - pip install -e ./food-is-mood/ini/
+  - cd ./food-is-mood/food-is-mood/
+  - pip install -e .
   
-### Initialize test SQLite database
+### Initialize test database
+  #### SQLite
   - cd to `./food-is-mood/food-is-mood/`
   - run `initialize_recipes_db dev.ini` to create database and tables
-
+  
+  #### Postgres
+  - Install postgres
+  - `# su postgres`
+  - `$ psql`
+  - Within the postgres command line, create user: `CREATE USER food WITH PASSWORD 'mood';`
+  - Create the database: `CREATE DATABASE foodismood OWNER food;`
+  - `\q` to quit psql, `exit` to get back to main console
+  - Edit `/etc/postgresql/<version>/main/pg_hba.conf`
+  - Add the following lines to the end
+    
+    ```
+    local   foodismood    food                                    peer
+    host    foodismood    food            127.0.0.1               md5
+    ```
+  - `service postgresql restart`
+  - Initialize alembic `alembic init alembic`
+  - In alembic.ini update sqlalchemy.url variable to the same sqlalchemy.url value set in dev.ini
+  
+  #### postgres 2
+  sudo apt-get install postgresql
+  sudo su - postgres
+  
+  
 ### Running dev server
   - activate venv with `source venv/bin/activate`
   - run `pserve ./food-is-mood/ini/dev.ini --reload `

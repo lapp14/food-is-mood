@@ -1,6 +1,6 @@
 .idea/
+alembic/
 venv/
 tmp/
 __pycache__/
 food-is-mood/recipes.sqlite
-
