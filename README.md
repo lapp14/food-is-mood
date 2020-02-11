@@ -36,6 +36,14 @@ Description of project
   sudo su - postgres
   
   
+## Docker
+  - docker build -t eg_postgresql .
+  - docker run --rm -P -p 5432:5432 --name pg_test eg_postgresql
+  - Now run `docker ps` to check its running
+  - To enter postgres shell run `psql -h localhost -p 5432 -d docker -U docker --password`  
+  
+  
+  
 ### Running dev server
   - activate venv with `source venv/bin/activate`
   - run `pserve ./food-is-mood/ini/dev.ini --reload `
