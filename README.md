@@ -7,6 +7,14 @@ Description of project
   - activate venv with `source venv/bin/activate`
   - cd ./food-is-mood/food-is-mood/
   - pip install -e .
+
+### Running dev server
+  - activate venv with `source venv/bin/activate`
+  - run `pserve ./food-is-mood/ini/dev.ini --reload `
+  - load [0.0.0.0:6543](http://0.0.0.0:6543/)
+
+### Running tests
+  - run `pytest food-is-mood/recipes/tests.py`
   
 ### Initialize test database
   #### SQLite
@@ -37,18 +45,5 @@ Description of project
   
   
 ## Docker
-  - docker build -t eg_postgresql .
-  - docker run --rm -P -p 5432:5432 --name pg_test eg_postgresql
-  - Now run `docker ps` to check its running
-  - To enter postgres shell run `psql -h localhost -p 5432 -d docker -U docker --password`  
+  - run `docker-compose up` 
   
-  
-  
-### Running dev server
-  - activate venv with `source venv/bin/activate`
-  - run `pserve ./food-is-mood/ini/dev.ini --reload `
-  - load [0.0.0.0:6543](http://0.0.0.0:6543/)
-  
-### Running tests
-  - run `pytest food-is-mood/recipes/tests.py`
-

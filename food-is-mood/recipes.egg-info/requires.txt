@@ -1,12 +1,12 @@
-alembic
 deform
-psycopg2-binary
 pyramid
 pyramid_jinja2
 pyramid_tm
 sqlalchemy
 waitress
 zope.sqlalchemy
+psycopg2-binary
+alembic
 
 [dev]
 pyramid_debugtoolbar
