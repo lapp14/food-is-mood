@@ -5,10 +5,19 @@ services:
     image: postgres
   web:
     build: .
-    command: pserve ./food-is-mood/dev.ini --reload
+    command: bash -c "cd food-is-mood &&
+                      pip install  . &&
+                      pserve test.ini --reload"
     volumes:
       - .:/code
     ports:
       - "6543:6543"
+    network_mode: "host"
     depends_on:
       - db
+
+# tail -F anything
+
+# cd food-is-mood
+# pip install . OR pip install .[dev]
+# pserve test.ini --reload

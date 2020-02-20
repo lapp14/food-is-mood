@@ -5,8 +5,8 @@ Description of project
   - install python3-venv
   - python3 -m venv venv
   - activate venv with `source venv/bin/activate`
-  - cd ./food-is-mood/food-is-mood/
-  - pip install -e .
+  - cd ./food-is-mood/
+  - pip install -e . 
 
 ### Running dev server
   - activate venv with `source venv/bin/activate`
@@ -46,4 +46,11 @@ Description of project
   
 ## Docker
   - run `docker-compose up` 
+  
+#### Debugging docker container
+  - run `docker-compose up`
+  - add the following to docker compose yaml
+    - `stdin_open: true`
+    - `tty: true`
+  - run `docker-compose exec web sh`
   

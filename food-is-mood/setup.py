@@ -25,6 +25,8 @@ dev_requires = [
 
 setup(
     name='recipes',
+    version='1.0.0',
+    packages=['recipes'],
     install_requires=requires,
     extras_require={
         'dev': dev_requires,

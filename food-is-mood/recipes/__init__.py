@@ -7,7 +7,7 @@ from .engine import User, Engine
 from .views import http_route_notfound
 from .models import DBSession, Base
 
-COOKIE_SECRET = 'canyouf33litinth3airt0night?!'  # TODO: reset and remove this later
+COOKIE_SECRET = '384bv94mjwg99q38jfq4mf48j2J0J4F893JQJ2834U29JQF3QJ9903200J2209j'  # TODO: reset and remove this later
 
 def addRoutes(config):
     config.add_route('home_view', '/')
@@ -24,9 +24,8 @@ def main(global_config, **settings):
     DBSession.configure(bind=engine)
     Base.metadata.bind = engine
     config = Configurator(settings=settings, root_factory='recipes.models.Root')
-    config.include('pyramid_chameleon')
     session_factory = SignedCookieSessionFactory(
-        secret='COOKIE_SECRET',
+        secret=COOKIE_SECRET,
         cookie_name='food-is-mood',
     )
     #config = Configurator(settings=settings, session_factory=session_factory)

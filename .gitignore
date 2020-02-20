@@ -1,6 +1,8 @@
 .idea/
 alembic/
-venv/
+dist/
+recipes.egg-info/
 tmp/
+venv/
 __pycache__/
 food-is-mood/recipes.sqlite
