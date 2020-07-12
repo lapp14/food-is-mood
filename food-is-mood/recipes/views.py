@@ -34,6 +34,7 @@ def session_scope():
 def http_route_notfound(request):
     return HTTPNotFound()
 
+
 @view_config(route_name="add_user")
 def add_user(request):
     first_name = request.GET.getone("first_name")
@@ -42,16 +43,10 @@ def add_user(request):
 
     with session_scope() as session:
         session.add(user)
-        new_user = (
-            session.query(User)
-            .filter_by(first_name=first_name, last_name=last_name)
-            .first()
-        )
+        new_user = session.query(User).filter_by(first_name=first_name, last_name=last_name).first()
 
         if new_user is user:
-            log.debug(
-                "add_user(): New user added, {new_user}".format(new_user=new_user)
-            )
+            log.debug("add_user(): New user added, {new_user}".format(new_user=new_user))
             print("New user added, {new_user}".format(new_user=new_user))
 
         all_users = session.query(User.first_name, User.last_name).all()
@@ -83,8 +78,7 @@ class RecipeViews(object):
         for ingredient in ingredients:
             recipe.ingredients.append(
                 RecipeIngredient(
-                    ingredient=ingredient["ingredient"],
-                    shopping_list=ingredient["shopping_list"],
+                    ingredient=ingredient["ingredient"], shopping_list=ingredient["shopping_list"],
                 )
             )
 
@@ -105,12 +99,7 @@ class RecipeViews(object):
     @view_config(route_name="home_view", renderer="templates/home_view.jinja2")
     def home_view(self):
         recipes = DBSession.query(Recipe).order_by(Recipe.title)
-        links = [
-            {
-                'title': 'Add a Recipe',
-                'route_name': 'recipe_add'
-            }
-        ]
+        links = [{"title": "Add a Recipe", "route_name": "recipe_add"}]
         return dict(title="Home View", pages=recipes, links=links)
 
     @view_config(route_name="recipe_add", renderer="templates/recipe_add_edit.jinja2")
@@ -147,15 +136,8 @@ class RecipeViews(object):
         uid = int(self.request.matchdict["uid"])
         recipe = DBSession.query(Recipe).filter_by(uid=uid).one()
         links = [
-            {
-                'title': 'Edit This',
-                'route_name': 'recipe_edit',
-                'uid': uid
-            },
-            {
-                'title': 'Add a Recipe',
-                'route_name': 'recipe_add'
-            },
+            {"title": "Edit This", "route_name": "recipe_edit", "uid": uid},
+            {"title": "Add a Recipe", "route_name": "recipe_add"},
         ]
         return dict(page=recipe, links=links)
 
@@ -193,10 +175,7 @@ class RecipeViews(object):
             "description": recipe.description,
             "steps": [{"step": step.step} for step in recipe.steps],
             "ingredients": [
-                {
-                    "ingredient": ingredient.ingredient,
-                    "shopping_list": ingredient.shopping_list,
-                }
+                {"ingredient": ingredient.ingredient, "shopping_list": ingredient.shopping_list,}
                 for ingredient in recipe.ingredients
             ],
             # 'tags': [tag.tag for tag in recipe.tags],
@@ -208,4 +187,3 @@ class RecipeViews(object):
         form = recipe_form.render(appstruct)
 
         return dict(recipe=recipe, form=form)
-

@@ -29,9 +29,7 @@ class RecipeTags(colander.MappingSchema):
 
 class RecipePage(colander.MappingSchema):
     title = colander.SchemaNode(colander.String())
-    description = colander.SchemaNode(
-        colander.String(), widget=deform.widget.RichTextWidget()
-    )
+    description = colander.SchemaNode(colander.String(), widget=deform.widget.RichTextWidget())
     ingredients = RecipeIngredients()
     steps = RecipeSteps()
     # tags = RecipeTags()
