@@ -11,3 +11,11 @@ input.form-control {
 }
 
 div.form-group.item-ingredient.item-ingredient {}
+
+a.deform-close-button {
+  margin: 1rem;
+}
+
+div.item-ingredient .panel-heading, div.item-steps .panel-heading {
+  display: none;
+}
