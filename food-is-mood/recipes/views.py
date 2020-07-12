@@ -34,7 +34,6 @@ def session_scope():
 def http_route_notfound(request):
     return HTTPNotFound()
 
-
 @view_config(route_name="add_user")
 def add_user(request):
     first_name = request.GET.getone("first_name")
@@ -79,6 +78,21 @@ class RecipeViews(object):
     def __init__(self, request):
         self.request = request
 
+    def add_recipe_ingredients(self, recipe, ingredients):
+        recipe.ingredients.clear()
+        for ingredient in ingredients:
+            recipe.ingredients.append(
+                RecipeIngredient(
+                    ingredient=ingredient["ingredient"],
+                    shopping_list=ingredient["shopping_list"],
+                )
+            )
+
+    def add_recipe_steps(self, recipe, steps):
+        recipe.steps.clear()
+        for index, step in enumerate(steps):
+            recipe.steps.append(RecipeStep(rank=index, step=step["step"]))
+
     @property
     def recipe_form(self):
         schema = RecipePage()
@@ -113,7 +127,11 @@ class RecipeViews(object):
             new_title = appstruct["title"]
             new_body = appstruct["description"]
             new_rank = int(appstruct["rank"])
-            DBSession.add(Recipe(title=new_title, description=new_body, rank=new_rank))
+            recipe = Recipe(title=new_title, description=new_body, rank=new_rank)
+            DBSession.add(recipe)
+
+            self.add_recipe_ingredients(recipe, appstruct["ingredients"])
+            self.add_recipe_steps(recipe, appstruct["steps"])
 
             page = DBSession.query(Recipe).filter_by(title=new_title).one()
             new_uid = page.uid
@@ -159,18 +177,8 @@ class RecipeViews(object):
             recipe["title"] = appstruct["title"]
             recipe["description"] = appstruct["description"]
 
-            recipe.ingredients.clear()
-            for ingredient in appstruct["ingredients"]:
-                recipe.ingredients.append(
-                    RecipeIngredient(
-                        ingredient=ingredient["ingredient"],
-                        shopping_list=ingredient["shopping_list"],
-                    )
-                )
-
-            recipe.steps.clear()
-            for index, step in enumerate(appstruct["steps"]):
-                recipe.steps.append(RecipeStep(rank=index, step=step["step"]))
+            self.add_recipe_ingredients(recipe, appstruct["ingredients"])
+            self.add_recipe_steps(recipe, appstruct["steps"])
 
             # recipe.tags.clear()
             # for tag in appstruct['tags']:
@@ -200,3 +208,4 @@ class RecipeViews(object):
         form = recipe_form.render(appstruct)
 
         return dict(recipe=recipe, form=form)
+
