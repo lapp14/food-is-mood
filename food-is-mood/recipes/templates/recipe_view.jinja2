@@ -10,7 +10,13 @@
 
   <div class="content">
     <h1 class="recipe-title">{{page.title}}</h1>
-    <span class="recipe-ranking">{% for star in range(page.rank) %}* {% endfor %}</span>
+    <span class="recipe-ranking">
+      {% if page.rank %}
+        {% for star in range(page.rank) %}* {% endfor %}
+      {% else %}
+        {{ page.rank }}
+      {% endif %}
+    </span>
     <p>{{page.description|safe}}</p>
     <h2>Ingredients</h2>
     <ul class="ingredients">

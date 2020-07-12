@@ -112,7 +112,8 @@ class RecipeViews(object):
 
             new_title = appstruct["title"]
             new_body = appstruct["description"]
-            DBSession.add(Recipe(title=new_title, description=new_body))
+            new_rank = int(appstruct["rank"])
+            DBSession.add(Recipe(title=new_title, description=new_body, rank=new_rank))
 
             page = DBSession.query(Recipe).filter_by(title=new_title).one()
             new_uid = page.uid
