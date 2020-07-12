@@ -3,4 +3,4 @@ venv/
 tmp/
 __pycache__/
 food-is-mood/recipes.sqlite
-food-is-mood/recipes.egg-info
+food-is-mood/recipes.egg-info/

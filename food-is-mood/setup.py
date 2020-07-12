@@ -5,6 +5,7 @@ from setuptools import setup
 requires = [
     'deform',
     'pyramid',
+    'pyramid_chameleon',
     'pyramid_jinja2',
     'pyramid_tm',
     'sqlalchemy',
