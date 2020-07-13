@@ -9,6 +9,8 @@
   {% include 'components/nav.jinja2' %}
 <div class="content">
   <h1>Current Recipies</h1>
+  <label for="search">Search recipes</label>
+  <input type="text" name="search"/>
   <ul>
     {% for page in pages %}
     <li>
@@ -18,6 +20,9 @@
     </li>
     {% endfor %}
   </ul>
+  <script>
+      console.log(document.querySelector(".content"))
+  </script>
 </div>
 </body>
 </html>

@@ -1,4 +1,4 @@
-import logging, deform.widget
+import logging, deform.widget, json
 from contextlib import contextmanager
 
 from pyramid.httpexceptions import HTTPNotFound
@@ -187,3 +187,10 @@ class RecipeViews(object):
         form = recipe_form.render(appstruct)
 
         return dict(recipe=recipe, form=form)
+
+    @view_config(route_name="search_recipes", renderer="json")
+    def search_recipes(self):
+        recipes = DBSession.query(Recipe).order_by(Recipe.title)
+        json_data = [dict(title=r.title, uid=r.uid) for r in recipes.all()]
+        return json.dumps(json_data)
+

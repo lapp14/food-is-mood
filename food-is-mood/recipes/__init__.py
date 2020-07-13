@@ -12,12 +12,13 @@ COOKIE_SECRET = "canyouf33litinth3airt0night?!"  # TODO: reset and remove this l
 
 def addRoutes(config):
     config.add_route("home_view", "/")
+    config.add_route("get_users_json", "/get_users.json")
+    config.add_route("search_recipes", "/search_recipes/")
     config.add_route("recipe_add", "/add/")
-    config.add_route("recipe_view", "/{uid}/")
-    config.add_route("recipe_edit", "/{uid}/edit/")
+    config.add_route("recipe_view", "/recipes/{uid}/")
+    config.add_route("recipe_edit", "/recipes/{uid}/edit/")
     config.add_route("add_user", "/add_user/")
     config.add_route("get_users", "/get_users/")
-    config.add_route("get_users_json", "/get_users.json")
     config.scan(".views")
 
 
