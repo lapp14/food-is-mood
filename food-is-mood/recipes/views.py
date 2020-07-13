@@ -87,6 +87,9 @@ class RecipeViews(object):
         for index, step in enumerate(steps):
             recipe.steps.append(RecipeStep(rank=index, step=step["step"]))
 
+    def jsonify_recipe_search(self, recipes):
+        return json.dumps([dict(title=r.title, uid=r.uid) for r in recipes.all()])
+
     @property
     def recipe_form(self):
         schema = RecipePage()
@@ -185,12 +188,17 @@ class RecipeViews(object):
             appstruct["rank"] = recipe.rank
 
         form = recipe_form.render(appstruct)
-
         return dict(recipe=recipe, form=form)
 
-    @view_config(route_name="search_recipes", renderer="json")
+    @view_config(route_name="search_recipes", renderer="templates/recipe_search.jinja2")
     def search_recipes(self):
-        recipes = DBSession.query(Recipe).order_by(Recipe.title)
-        json_data = [dict(title=r.title, uid=r.uid) for r in recipes.all()]
-        return json.dumps(json_data)
+        title = self.request.json_body.get('title', '').strip()
+        recipes = DBSession.query(Recipe)\
+            .filter(Recipe.title.contains(title))\
+            .order_by(Recipe.title)
+
+        if recipes.count() <= 0:
+            return dict()
+
+        return dict(pages=recipes)
 

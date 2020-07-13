@@ -24,4 +24,12 @@ Recipe book project. Currently using SQLite as db.
 ### localhost
   - docker build .
   - docker run --network="host" -p 6543:6543
+  
+
+## Notes
+### Testing json endpoints
+Using `httpie` you can hit the endpoints via command line
+
+```http -v POST  localhost:6543/search_recipes/ "Content-Type:application/json" searchQuery="asd"```
+
 
