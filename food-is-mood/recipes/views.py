@@ -70,6 +70,8 @@ def get_users(request):
 
 
 class RecipeViews(object):
+    SEARCH_LIMIT = 20
+
     def __init__(self, request):
         self.request = request
 
@@ -195,7 +197,8 @@ class RecipeViews(object):
         title = self.request.json_body.get('title', '').strip()
         recipes = DBSession.query(Recipe)\
             .filter(Recipe.title.contains(title))\
-            .order_by(Recipe.title)
+            .order_by(Recipe.title)\
+            .limit(self.SEARCH_LIMIT)
 
         if recipes.count() <= 0:
             return dict()
