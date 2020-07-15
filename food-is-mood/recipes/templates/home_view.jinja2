@@ -4,20 +4,31 @@
   <title>Wiki: View</title>
   <link rel="shortcut icon" href="{{request.static_url('recipes:static/favicon.ico')}}" />
   <link rel="stylesheet" href="{{request.static_url('recipes:static/app.css')}}"/>
+  <script src="{{request.static_url('recipes:js/requests.js')}}" async></script>
 </head>
 <body>
   {% include 'components/nav.jinja2' %}
 <div class="content">
   <h1>Current Recipies</h1>
-  <ul>
-    {% for page in pages %}
-    <li>
-        <a href="{{request.route_url('recipe_view', uid=page.uid)}}">
-                {{page.title}}
-        </a>
-    </li>
-    {% endfor %}
-  </ul>
+  <label for="search">Search recipes</label>
+  <input type="text" name="search" id="recipe-title-search" oninput="searchOnTextChange(this, '/search_recipes/')"/>
+  <div id="recipe-list">
+
+  </div>
+  <script>
+    const searchOnTextChange = async (textInput, endpoint) => {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: textInput.value || '' })
+      }).then(function(response) {
+          return response.text();
+      }).then(function(html) {
+          document.querySelector('#recipe-list').innerHTML = html;
+      });
+    }
+    searchOnTextChange(document.getElementById('recipe-title-search'), '/search_recipes/');
+  </script>
 </div>
 </body>
 </html>

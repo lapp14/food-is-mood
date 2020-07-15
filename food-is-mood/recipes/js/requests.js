@@ -1,0 +1,8 @@
+window.foodismood =  (() => {
+  return {
+  }
+})();
+
+
+
+

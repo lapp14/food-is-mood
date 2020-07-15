@@ -3,33 +3,42 @@
 <head>
     <link rel="shortcut icon" href="{{request.static_url('recipes:static/favicon.ico')}}" />
     <link rel="stylesheet" href="{{request.static_url('recipes:static/app.css')}}"/>
-    <title>Food is Mood - {{ page.title }}</title>
+    <title>Food is Mood - {{ recipe.title }}</title>
 </head>
 <body>
   {% include 'components/nav.jinja2' %}
 
   <div class="content">
-    <h1 class="recipe-title">{{page.title}}</h1>
+    <h1 class="recipe-title">{{recipe.title}}</h1>
+
     <span class="recipe-ranking">
-      {% if page.rank %}
-        {% for star in range(page.rank) %}* {% endfor %}
+      {% if recipe.rank %}
+        {% for star in range(recipe.rank) %}* {% endfor %}
       {% else %}
-        {{ page.rank }}
+        {{ recipe.rank }}
       {% endif %}
     </span>
-    <p>{{page.description|safe}}</p>
+
+    <p>{{recipe.description|safe}}</p>
+
     <h2>Ingredients</h2>
     <ul class="ingredients">
-    {% for ingredient in page.ingredients %}
+    {% for ingredient in recipe.ingredients %}
       <li>{{ingredient.ingredient}}</li>
     {% endfor %}
     </ul>
+
     <h2>Steps</h2>
     <ol class="steps">
-    {% for step in page.steps %}
+    {% for step in recipe.steps %}
       <li>{{step.step}}</li>
     {% endfor %}
     </ol>
+
+    <h3>Tags</h3>
+    {% for tag in tags %}
+      {{tag.tag}}
+    {% endfor %}
   </div>
 </body>
 </html>
