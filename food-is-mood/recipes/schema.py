@@ -11,7 +11,7 @@ class RecipeStep(colander.MappingSchema):
     step = colander.SchemaNode(colander.String())
 
 
-class RecipeTag(colander.MappingSchema):
+class Tag(colander.MappingSchema):
     tag = colander.SchemaNode(colander.String())
 
 
@@ -23,8 +23,8 @@ class RecipeSteps(colander.SequenceSchema):
     step = RecipeStep()
 
 
-class RecipeTags(colander.MappingSchema):
-    tag = RecipeTag()
+class RecipeTags(colander.SequenceSchema):
+    tag = Tag()
 
 
 class RecipePage(colander.MappingSchema):
@@ -32,5 +32,5 @@ class RecipePage(colander.MappingSchema):
     description = colander.SchemaNode(colander.String(), widget=deform.widget.RichTextWidget())
     ingredients = RecipeIngredients()
     steps = RecipeSteps()
-    # tags = RecipeTags()
+    tags = RecipeTags()
     rank = colander.SchemaNode(colander.Int(), validator=colander.Range(1, 5))

@@ -4,8 +4,10 @@ from contextlib import contextmanager
 from pyramid.httpexceptions import HTTPNotFound
 
 from recipes.schema import RecipePage
+from sqlalchemy.orm.exc import NoResultFound
+
 from .engine import User, Engine
-from .models import DBSession, Recipe, RecipeStep, RecipeIngredient
+from .models import DBSession, Recipe, RecipeStep, RecipeIngredient, Tag, RecipeTag
 from sqlalchemy.orm import sessionmaker
 from pyramid.response import Response
 from pyramid.view import view_config
@@ -89,6 +91,31 @@ class RecipeViews(object):
         for index, step in enumerate(steps):
             recipe.steps.append(RecipeStep(rank=index, step=step["step"]))
 
+    def add_recipe_tags(self, recipe, tags):
+        recipe.tags.clear()
+        for tag in tags:
+            new_tag = self.add_or_get_tag(tag['tag'])
+            recipe.tags.append(RecipeTag(recipe_id=recipe.uid, tag_id=new_tag.uid))
+
+    def add_or_get_tag(self, tag_label):
+        try:
+            result = DBSession.query(Tag).filter_by(tag=tag_label).one()
+            print('Tag found, returning tag ' + result.tag)
+        except NoResultFound:
+            result = Tag(tag=tag_label)
+            print('Creating new tag: ' + tag_label)
+            DBSession.add(result)
+            DBSession.flush()
+
+        return result
+
+    def get_recipe_tags(self, recipe):
+        result = DBSession.query(RecipeTag, Tag)\
+            .filter(RecipeTag.recipe_id == recipe.uid)\
+            .filter(RecipeTag.tag_id == Tag.uid)\
+            .all()
+        return [tuple[1] for tuple in result]
+
     def jsonify_recipe_search(self, recipes):
         return json.dumps([dict(title=r.title, uid=r.uid) for r in recipes.all()])
 
@@ -126,6 +153,7 @@ class RecipeViews(object):
 
             self.add_recipe_ingredients(recipe, appstruct["ingredients"])
             self.add_recipe_steps(recipe, appstruct["steps"])
+            self.add_recipe_tags(recipe, appstruct['tags'])
 
             page = DBSession.query(Recipe).filter_by(title=new_title).one()
             new_uid = page.uid
@@ -144,7 +172,8 @@ class RecipeViews(object):
             {"title": "Edit This", "route_name": "recipe_edit", "uid": uid},
             {"title": "Add a Recipe", "route_name": "recipe_add"},
         ]
-        return dict(page=recipe, links=links)
+        tags = self.get_recipe_tags(recipe)
+        return dict(recipe=recipe, tags=tags, links=links)
 
     @view_config(route_name="recipe_edit", renderer="templates/recipe_add_edit.jinja2")
     def recipe_edit(self):
@@ -166,10 +195,7 @@ class RecipeViews(object):
 
             self.add_recipe_ingredients(recipe, appstruct["ingredients"])
             self.add_recipe_steps(recipe, appstruct["steps"])
-
-            # recipe.tags.clear()
-            # for tag in appstruct['tags']:
-            #    recipe.tags.append(RecipeTag)
+            self.add_recipe_tags(recipe, appstruct['tags'])
 
             recipe["rank"] = int(appstruct["rank"])
             url = self.request.route_url("recipe_view", uid=uid)
@@ -183,7 +209,7 @@ class RecipeViews(object):
                 {"ingredient": ingredient.ingredient, "shopping_list": ingredient.shopping_list,}
                 for ingredient in recipe.ingredients
             ],
-            # 'tags': [tag.tag for tag in recipe.tags],
+            'tags': [{"tag": tag.tag} for tag in self.get_recipe_tags(recipe)]
         }
 
         if recipe.rank:
