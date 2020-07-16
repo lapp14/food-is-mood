@@ -1,13 +1,16 @@
 {% if pages is defined %}
   {% for page in pages %}
-  <div class="recipe-list-item">
-    <a href="{{request.route_url('recipe_view', uid=page.uid)}}">
-      {{page.title}}
-    </a>
-  </div>
+
+  <a class="recipe-list-item" href="{{request.route_url('recipe_view', uid=page.uid)}}">
+    <h2>{{page.title}}</h2>
+    <p>
+      {{page.description|safe}}
+    </p>
+  </a>
+
   {% endfor %}
 {% else %}
-<span class="search-error">
+<span class="error search-error">
   No recipes match your search!
 </span>
 {% endif %}

@@ -41,8 +41,12 @@ nav ul li {
 
 div.content {
   max-width: 1080px;
-  padding: 0 2rem;
+  padding: 2rem;
   margin: 0 auto;
+}
+
+section {
+  margin-top: 2rem;
 }
 
 h1.recipe-title {
@@ -69,4 +73,63 @@ ul.ingredients li {
 
 ol.steps {
 
+}
+
+input[type=text], select {
+  font-size: 1.6rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #333;
+}
+
+select {
+  background: #ffffff;
+  font-size: 1.25rem;
+}
+
+input[type=text]:focus, textarea:focus {
+  border: 1px solid #666666;
+  box-shadow: 0 0 5px #03d5ff;
+}
+
+form.search-container {
+  display: flex;
+}
+
+form.search-container .search-lg {
+  width: 100%;
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+}
+
+form.search-container select {
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+  border-left: none;
+  color: #555555;
+
+  /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#e2e2e2+0,dbdbdb+50,d1d1d1+51,fefefe+100;Grey+Gloss+%231 */
+  background: rgb(226,226,226); /* Old browsers */
+  background: -moz-linear-gradient(top,  rgba(226,226,226,1) 0%, rgb(219, 219, 219) 50%, rgba(209,209,209,1) 51%, rgba(254,254,254,1) 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(top,  rgba(226,226,226,1) 0%,rgba(219,219,219,1) 50%,rgba(209,209,209,1) 51%,rgba(254,254,254,1) 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to bottom,  rgba(226,226,226,1) 0%,rgba(219,219,219,1) 50%,rgba(209,209,209,1) 51%,rgba(254,254,254,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e2e2e2', endColorstr='#fefefe',GradientType=0 ); /* IE6-9 */
+}
+
+section#recipe-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+section#recipe-list a.recipe-list-item {
+  color: black;
+  border: 1px solid #333333;
+  padding: 2rem;
+  margin: 1rem;
+  text-decoration: none;
+  flex: 0 50%;
+}
+
+section#recipe-list a.recipe-list-item h2 {
+  margin: 0;
 }
