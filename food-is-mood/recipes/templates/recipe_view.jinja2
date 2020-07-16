@@ -21,6 +21,12 @@
 
     <p>{{recipe.description|safe}}</p>
 
+    <div class="recipe-tags">
+      {% for tag in tags %}
+        <span>{{tag.tag}}</span>
+      {% endfor %}
+    </div>
+
     <h2>Ingredients</h2>
     <ul class="ingredients">
     {% for ingredient in recipe.ingredients %}
@@ -34,11 +40,6 @@
       <li>{{step.step}}</li>
     {% endfor %}
     </ol>
-
-    <h3>Tags</h3>
-    {% for tag in tags %}
-      {{tag.tag}}
-    {% endfor %}
   </div>
 </body>
 </html>

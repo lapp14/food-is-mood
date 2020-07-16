@@ -228,6 +228,7 @@ class RecipeViews(object):
 
         if recipes.count() <= 0:
             return dict()
-
-        return dict(pages=recipes)
+        
+        recipes = [{'recipe': recipe, 'tag_names': self.get_recipe_tags(recipe)} for recipe in recipes]
+        return dict(recipes=recipes)
 
