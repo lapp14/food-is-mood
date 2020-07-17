@@ -34,6 +34,7 @@ def main(global_config, **settings):
     # config = Configurator(settings=settings, session_factory=session_factory)
     config.include("pyramid_jinja2")
     config.add_static_view(name="static", path="recipes:static")
+    config.add_static_view(name="img", path="recipes:img")
     config.add_static_view(name="js", path="recipes:js")
     config.add_static_view("deform_static", "deform:static/")
     config.add_notfound_view(http_route_notfound, append_slash=True)

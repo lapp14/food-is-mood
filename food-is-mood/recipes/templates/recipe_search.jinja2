@@ -1,13 +1,22 @@
-{% if pages is defined %}
-  {% for page in pages %}
+{% if recipes is defined %}
+  {% for item in recipes %}
   <div class="recipe-list-item">
-    <a href="{{request.route_url('recipe_view', uid=page.uid)}}">
-      {{page.title}}
+    <a href="{{request.route_url('recipe_view', uid=item.recipe.uid)}}">
+      <h2>{{item.recipe.title}}</h2>
+      {% include 'components/star_rating.jinja2' %}
+      <p>
+        {{item.recipe.description|safe}}
+      </p>
+      <div class="recipe-tags">
+        {% for tag in item.tag_names %}
+          <span>{{tag.tag}}</span>
+        {% endfor %}
+      </div>
     </a>
   </div>
   {% endfor %}
 {% else %}
-<span class="search-error">
+<span class="error search-error">
   No recipes match your search!
 </span>
 {% endif %}
