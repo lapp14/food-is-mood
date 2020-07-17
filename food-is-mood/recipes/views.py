@@ -86,6 +86,13 @@ class RecipeViews(object):
                 )
             )
 
+    def add_recipe_image(self, recipe, image):
+
+        with open('myfile2.jpg', 'wb') as file: 
+            file.write(image['fp'].read())
+        
+        file.close()
+
     def add_recipe_steps(self, recipe, steps):
         recipe.steps.clear()
         for index, step in enumerate(steps):
@@ -196,6 +203,7 @@ class RecipeViews(object):
             self.add_recipe_ingredients(recipe, appstruct["ingredients"])
             self.add_recipe_steps(recipe, appstruct["steps"])
             self.add_recipe_tags(recipe, appstruct['tags'])
+            self.add_recipe_image(recipe, appstruct['image'])
 
             recipe["rank"] = int(appstruct["rank"])
             url = self.request.route_url("recipe_view", uid=uid)
