@@ -146,3 +146,7 @@ div.recipe-tags span {
   border-radius: 0.3rem;
   padding: 0.3rem 0.6rem;
 }
+
+span.recipe-rating img {
+  width: 1.3rem;
+}

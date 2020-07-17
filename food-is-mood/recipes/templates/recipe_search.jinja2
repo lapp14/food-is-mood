@@ -3,6 +3,19 @@
   <div class="recipe-list-item">
     <a href="{{request.route_url('recipe_view', uid=item.recipe.uid)}}">
       <h2>{{item.recipe.title}}</h2>
+      <span class="recipe-rating">
+        <!-- 
+          Icons used from Hand Drawn Web Icon Set, Pawel Kadysz, Founder of 177DESIGNS 
+          author page: http://177icons.com/hand-drawn-web-icon-set
+          download: https://www.iconfinder.com/iconsets/Hand_Drawn_Web_Icon_Set
+        -->
+        {% for n in range(item.recipe.rank) %}
+          <img src="{{request.static_url('recipes:img/iconfinder_star_full_66927.png')}}" />
+        {% endfor %}
+        {% for n in range(5 - item.recipe.rank) %}
+          <img src="{{request.static_url('recipes:img/iconfinder_star_empty_66881.png')}}" />
+        {% endfor %}
+      </span>
       <p>
         {{item.recipe.description|safe}}
       </p>
