@@ -173,7 +173,7 @@ class RecipeViews(object):
             {"title": "Add a Recipe", "route_name": "recipe_add"},
         ]
         tags = self.get_recipe_tags(recipe)
-        return {'item': dict(recipe=recipe, tags=tags, links=links)}
+        return {'item': dict(recipe=recipe, tags=tags), 'links': links}
 
     @view_config(route_name="recipe_edit", renderer="templates/recipe_add_edit.jinja2")
     def recipe_edit(self):
