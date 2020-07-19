@@ -12,6 +12,17 @@ Recipe book project. Currently using SQLite as db.
   - cd to `./food-is-mood/`
   - run `initialize_recipes_db dev.ini` to create database and tables
 
+### Environment vars
+The following environment vars are required
+```
+AWS_ACCESS_KEY_ID=""
+AWS_SECRET_ACCESS_KEY=""
+AWS_S3_BUCKET_NAME=""
+AWS_S3_BUCKET_URL=""
+AWS_S3_BASE_PATH=""
+AWS_S3_BASE_URL=""
+```
+
 ### Running dev server
   - activate venv with `source venv/bin/activate`
   - run `pserve ./food-is-mood/dev.ini --reload `

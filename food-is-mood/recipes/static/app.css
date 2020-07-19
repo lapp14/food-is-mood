@@ -71,6 +71,10 @@ ul.ingredients li {
   border-bottom: 1px solid black;
 }
 
+img.recipe-image {
+  width: 240px;
+}
+
 ol.steps {
 
 }

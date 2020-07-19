@@ -31,6 +31,11 @@
 <div class="content">
   <h1>Edit Recipe:</h1>
   <p>{{form|safe}}</p>
+  
+  <!-- temp just print the image path if exists -->
+  {% if image is defined %}
+    Current image: <img src="{{image}}" style="width: 120px"/>
+  {% endif %}
 </div>
 
 <script type="text/javascript">
