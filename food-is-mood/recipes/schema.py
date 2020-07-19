@@ -1,5 +1,6 @@
 import colander, deform.widget
 from deform.interfaces import FileUploadTempStore
+from deform.template import ZPTTemplateLoader, ZPTRendererFactory
 
 
 class RecipeIngredient(colander.MappingSchema):
@@ -41,6 +42,8 @@ class RecipePage(colander.MappingSchema):
     steps = RecipeSteps()
     tags = RecipeTags()
     rank = colander.SchemaNode(colander.Int(), validator=colander.Range(1, 5))
-    image = colander.SchemaNode(deform.FileData(), widget=deform.widget.FileUploadWidget(tmpstore), title="Upload Image")
+
+    image_upload_widget = deform.widget.FileUploadWidget(tmpstore, template="recipes:templates/deform/image_upload.pt")
+    image = colander.SchemaNode(deform.FileData(), widget=image_upload_widget, title="Upload Image")
 
 

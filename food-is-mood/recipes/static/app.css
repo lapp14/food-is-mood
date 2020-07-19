@@ -75,6 +75,10 @@ img.recipe-image {
   width: 240px;
 }
 
+img.recipe-image__upload-preview {
+  width: 120px;
+}
+
 ol.steps {
 
 }

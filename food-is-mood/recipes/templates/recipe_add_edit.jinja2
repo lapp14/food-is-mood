@@ -31,15 +31,16 @@
 <div class="content">
   <h1>Edit Recipe:</h1>
   <p>{{form|safe}}</p>
-  
-  <!-- temp just print the image path if exists -->
-  {% if image is defined %}
-    Current image: <img src="{{image}}" style="width: 120px"/>
-  {% endif %}
-</div>
 
 <script type="text/javascript">
-    deform.load()
+    (async function() {
+
+      await deform.load()
+      var img = document.createElement('img');
+      img.className = 'recipe-image__upload-preview';
+      img.src = "{{image}}";
+      document.getElementById('food-is-mood__upload-image').appendChild(img);
+    })();
 </script>
 </body>
 </html>
