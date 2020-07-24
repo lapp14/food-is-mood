@@ -16,6 +16,7 @@ def _add_routes(config):
     config.add_route("recipe_add", "/add/")
     config.add_route("recipe_view", "/recipes/{uid}/")
     config.add_route("recipe_edit", "/recipes/{uid}/edit/")
+    config.add_route("recipe_edit_image", "/recipes/{uid}/edit-image/")
     config.add_route("add_user", "/add_user/")
     config.add_route("get_users", "/get_users/")
     config.add_route("search_recipes", "/search_recipes/")

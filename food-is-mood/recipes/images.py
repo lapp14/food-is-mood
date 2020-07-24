@@ -25,6 +25,9 @@ def _verify_image(image):
     return file_extension
 
 def delete_image(url):
+    if url is None:
+        return
+
     if os.path.isdir(url):
         raise Exception('Attempting to delete path')
 
