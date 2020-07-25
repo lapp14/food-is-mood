@@ -30,6 +30,9 @@ AWS_S3_BASE_URL=""
   
 ### Running tests
   - run `pytest food-is-mood/recipes/tests.py`
+
+### Formatting
+  - Format python files by running `black food-is-mood/*.py`
   
 ## Docker
 ### localhost
