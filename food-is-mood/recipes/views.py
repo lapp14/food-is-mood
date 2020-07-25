@@ -94,26 +94,28 @@ class RecipeViews(object):
     def add_recipe_tags(self, recipe, tags):
         recipe.tags.clear()
         for tag in tags:
-            new_tag = self.add_or_get_tag(tag['tag'])
+            new_tag = self.add_or_get_tag(tag["tag"])
             recipe.tags.append(RecipeTag(recipe_id=recipe.uid, tag_id=new_tag.uid))
 
     def add_or_get_tag(self, tag_label):
         try:
             result = DBSession.query(Tag).filter_by(tag=tag_label).one()
-            print('Tag found, returning tag ' + result.tag)
+            print("Tag found, returning tag " + result.tag)
         except NoResultFound:
             result = Tag(tag=tag_label)
-            print('Creating new tag: ' + tag_label)
+            print("Creating new tag: " + tag_label)
             DBSession.add(result)
             DBSession.flush()
 
         return result
 
     def get_recipe_tags(self, recipe):
-        result = DBSession.query(RecipeTag, Tag)\
-            .filter(RecipeTag.recipe_id == recipe.uid)\
-            .filter(RecipeTag.tag_id == Tag.uid)\
+        result = (
+            DBSession.query(RecipeTag, Tag)
+            .filter(RecipeTag.recipe_id == recipe.uid)
+            .filter(RecipeTag.tag_id == Tag.uid)
             .all()
+        )
         return [tuple[1] for tuple in result]
 
     def jsonify_recipe_search(self, recipes):
@@ -153,7 +155,7 @@ class RecipeViews(object):
 
             self.add_recipe_ingredients(recipe, appstruct["ingredients"])
             self.add_recipe_steps(recipe, appstruct["steps"])
-            self.add_recipe_tags(recipe, appstruct['tags'])
+            self.add_recipe_tags(recipe, appstruct["tags"])
 
             page = DBSession.query(Recipe).filter_by(title=new_title).one()
             new_uid = page.uid
@@ -173,7 +175,7 @@ class RecipeViews(object):
             {"title": "Add a Recipe", "route_name": "recipe_add"},
         ]
         tags = self.get_recipe_tags(recipe)
-        return {'item': dict(recipe=recipe, tags=tags), 'links': links}
+        return {"item": dict(recipe=recipe, tags=tags), "links": links}
 
     @view_config(route_name="recipe_edit", renderer="templates/recipe_add_edit.jinja2")
     def recipe_edit(self):
@@ -195,7 +197,7 @@ class RecipeViews(object):
 
             self.add_recipe_ingredients(recipe, appstruct["ingredients"])
             self.add_recipe_steps(recipe, appstruct["steps"])
-            self.add_recipe_tags(recipe, appstruct['tags'])
+            self.add_recipe_tags(recipe, appstruct["tags"])
 
             recipe["rank"] = int(appstruct["rank"])
             url = self.request.route_url("recipe_view", uid=uid)
@@ -209,7 +211,7 @@ class RecipeViews(object):
                 {"ingredient": ingredient.ingredient, "shopping_list": ingredient.shopping_list,}
                 for ingredient in recipe.ingredients
             ],
-            'tags': [{"tag": tag.tag} for tag in self.get_recipe_tags(recipe)]
+            "tags": [{"tag": tag.tag} for tag in self.get_recipe_tags(recipe)],
         }
 
         if recipe.rank:
@@ -220,15 +222,18 @@ class RecipeViews(object):
 
     @view_config(route_name="search_recipes", renderer="templates/recipe_search.jinja2")
     def search_recipes(self):
-        title = self.request.json_body.get('title', '').strip()
-        recipes = DBSession.query(Recipe)\
-            .filter(Recipe.title.contains(title))\
-            .order_by(Recipe.title)\
+        title = self.request.json_body.get("title", "").strip()
+        recipes = (
+            DBSession.query(Recipe)
+            .filter(Recipe.title.contains(title))
+            .order_by(Recipe.title)
             .limit(self.SEARCH_LIMIT)
+        )
 
         if recipes.count() <= 0:
             return dict()
-        
-        recipes = [{'recipe': recipe, 'tag_names': self.get_recipe_tags(recipe)} for recipe in recipes]
-        return dict(recipes=recipes)
 
+        recipes = [
+            {"recipe": recipe, "tag_names": self.get_recipe_tags(recipe)} for recipe in recipes
+        ]
+        return dict(recipes=recipes)

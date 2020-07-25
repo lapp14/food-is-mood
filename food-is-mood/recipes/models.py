@@ -22,7 +22,7 @@ class Recipe(Base):
 
     ingredients = relationship("RecipeIngredient", backref="recipes")
     steps = relationship("RecipeStep", backref="recipes")
-    tags = relationship('RecipeTag', backref="recipes")
+    tags = relationship("RecipeTag", backref="recipes")
 
     def __getitem__(self, item):
         return getattr(self, item)

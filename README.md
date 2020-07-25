@@ -19,6 +19,9 @@ Recipe book project. Currently using SQLite as db.
   
 ### Running tests
   - run `pytest food-is-mood/recipes/tests.py`
+
+### Formatting
+  - Format python files by running `black food-is-mood/*.py`
   
 ## Docker
 ### localhost
