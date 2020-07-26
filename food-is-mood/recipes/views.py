@@ -51,7 +51,7 @@ def add_user(request):
         if new_user is user:
             log.debug("add_user(): New user added, {new_user}".format(new_user=new_user))
             print("New user added, {new_user}".format(new_user=new_user))
-        
+
         all_users = session.query(User.first_name, User.last_name).all()
 
     return Response("<pre>" + "\n".join(map(str, all_users)) + "</pre>")
@@ -89,11 +89,11 @@ class RecipeViews(object):
 
     def add_recipe_image(self, recipe, image):
         if image is None:
-            print('>> No image to upload')
+            print(">> No image to upload")
             return
 
-        if image['filename'] == recipe.image_path:
-            print('>> Not changing existing image')
+        if image["filename"] == recipe.image_path:
+            print(">> Not changing existing image")
             return
 
         if recipe.image_path:
@@ -127,7 +127,7 @@ class RecipeViews(object):
 
     def get_recipe_image_url(self, recipe):
         if recipe.image_path:
-            return os.path.join(os.environ['AWS_S3_BASE_URL'], recipe.image_path)
+            return os.path.join(os.environ["AWS_S3_BASE_URL"], recipe.image_path)
 
     def get_recipe_tags(self, recipe):
         result = (
@@ -150,8 +150,10 @@ class RecipeViews(object):
         schema = RecipeImageUploadPage()
 
         if image_path:
-            return deform.Form(schema, buttons=("upload new image", "keep existing image", "delete image",))
-        
+            return deform.Form(
+                schema, buttons=("upload new image", "keep existing image", "delete image",)
+            )
+
         return deform.Form(schema, buttons=("upload image", "skip",))
 
     @property
@@ -251,8 +253,8 @@ class RecipeViews(object):
                 appstruct = recipe_image_form.validate(controls)
             except deform.ValidationFailure as e:
                 return dict(recipe=recipe, form=e.render())
-            
-            self.add_recipe_image(recipe, appstruct['image'])
+
+            self.add_recipe_image(recipe, appstruct["image"])
             url = self.request.route_url("recipe_view", uid=uid)
             return HTTPFound(url)
 
@@ -260,7 +262,7 @@ class RecipeViews(object):
             print("KEEP IMAGE")
             url = self.request.route_url("recipe_view", uid=uid)
             return HTTPFound(url)
-        
+
         if "delete_image" in self.request.params:
             print("DELETE IMAGE")
             if recipe.image_path:
@@ -269,18 +271,21 @@ class RecipeViews(object):
 
             url = self.request.route_url("recipe_view", uid=uid)
             return HTTPFound(url)
-        
+
         form = recipe_image_form.render()
-        
+
         image = self.get_recipe_image_url(recipe)
-        question = "Would you like to edit the image?" if recipe.image_path else "Would you like to add an image?"
+        question = (
+            "Would you like to edit the image?"
+            if recipe.image_path
+            else "Would you like to add an image?"
+        )
         template_data = dict(recipe=recipe, form=form, question=question)
-        
+
         if image:
-            template_data['image'] = image        
+            template_data["image"] = image
 
         return template_data
-
 
     @view_config(route_name="recipe_view", renderer="templates/recipe_view.jinja2")
     def recipe_view(self):
@@ -295,8 +300,8 @@ class RecipeViews(object):
         recipe_item = dict(recipe=recipe, tags=tags)
 
         if image:
-            print('>> Serving image: {}'.format(image))
-            recipe_item['image'] = image
+            print(">> Serving image: {}".format(image))
+            recipe_item["image"] = image
 
         return dict(item=recipe_item, links=links)
 
