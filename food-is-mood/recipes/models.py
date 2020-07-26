@@ -19,6 +19,7 @@ class Recipe(Base):
     title = Column(String, unique=True)
     description = Column(Text)
     rank = Column(Integer)
+    image_path = Column(String)
 
     ingredients = relationship("RecipeIngredient", backref="recipes")
     steps = relationship("RecipeStep", backref="recipes")

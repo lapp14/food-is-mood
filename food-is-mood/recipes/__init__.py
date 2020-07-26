@@ -10,12 +10,13 @@ from .models import DBSession, Base
 COOKIE_SECRET = "canyouf33litinth3airt0night?!"  # TODO: reset and remove this later
 
 
-def addRoutes(config):
+def _add_routes(config):
     config.add_route("home_view", "/")
     config.add_route("get_users_json", "/get_users.json")
     config.add_route("recipe_add", "/add/")
     config.add_route("recipe_view", "/recipes/{uid}/")
     config.add_route("recipe_edit", "/recipes/{uid}/edit/")
+    config.add_route("recipe_edit_image", "/recipes/{uid}/edit-image/")
     config.add_route("add_user", "/add_user/")
     config.add_route("get_users", "/get_users/")
     config.add_route("search_recipes", "/search_recipes/")
@@ -38,6 +39,6 @@ def main(global_config, **settings):
     config.add_static_view(name="js", path="recipes:js")
     config.add_static_view("deform_static", "deform:static/")
     config.add_notfound_view(http_route_notfound, append_slash=True)
-    addRoutes(config)
+    _add_routes(config)
     print("Starting server...")
     return config.make_wsgi_app()

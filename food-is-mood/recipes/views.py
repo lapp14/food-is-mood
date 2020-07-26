@@ -1,12 +1,13 @@
-import logging, deform.widget, json
+import logging, deform.widget, json, os
 from contextlib import contextmanager
 
 from pyramid.httpexceptions import HTTPNotFound
 
-from recipes.schema import RecipePage
+from recipes.schema import RecipePage, RecipeImageUploadPage
 from sqlalchemy.orm.exc import NoResultFound
 
 from .engine import User, Engine
+from .images import upload_image, delete_image
 from .models import DBSession, Recipe, RecipeStep, RecipeIngredient, Tag, RecipeTag
 from sqlalchemy.orm import sessionmaker
 from pyramid.response import Response
@@ -50,7 +51,7 @@ def add_user(request):
         if new_user is user:
             log.debug("add_user(): New user added, {new_user}".format(new_user=new_user))
             print("New user added, {new_user}".format(new_user=new_user))
-
+        
         all_users = session.query(User.first_name, User.last_name).all()
 
     return Response("<pre>" + "\n".join(map(str, all_users)) + "</pre>")
@@ -86,6 +87,21 @@ class RecipeViews(object):
                 )
             )
 
+    def add_recipe_image(self, recipe, image):
+        if image is None:
+            print('>> No image to upload')
+            return
+
+        if image['filename'] == recipe.image_path:
+            print('>> Not changing existing image')
+            return
+
+        if recipe.image_path:
+            delete_image(recipe.image_path)
+
+        image_path = upload_image(image)
+        recipe.image_path = image_path
+
     def add_recipe_steps(self, recipe, steps):
         recipe.steps.clear()
         for index, step in enumerate(steps):
@@ -109,6 +125,10 @@ class RecipeViews(object):
 
         return result
 
+    def get_recipe_image_url(self, recipe):
+        if recipe.image_path:
+            return os.path.join(os.environ['AWS_S3_BASE_URL'], recipe.image_path)
+
     def get_recipe_tags(self, recipe):
         result = (
             DBSession.query(RecipeTag, Tag)
@@ -125,6 +145,14 @@ class RecipeViews(object):
     def recipe_form(self):
         schema = RecipePage()
         return deform.Form(schema, buttons=("submit",))
+
+    def recipe_image_form(self, image_path):
+        schema = RecipeImageUploadPage()
+
+        if image_path:
+            return deform.Form(schema, buttons=("upload new image", "keep existing image", "delete image",))
+        
+        return deform.Form(schema, buttons=("upload image", "skip",))
 
     @property
     def reqts(self):
@@ -161,21 +189,10 @@ class RecipeViews(object):
             new_uid = page.uid
 
             # Now visit new page
-            url = self.request.route_url("recipe_view", uid=new_uid)
+            url = self.request.route_url("recipe_edit_image", uid=new_uid)
             return HTTPFound(url)
 
         return dict(form=form)
-
-    @view_config(route_name="recipe_view", renderer="templates/recipe_view.jinja2")
-    def recipe_view(self):
-        uid = int(self.request.matchdict["uid"])
-        recipe = DBSession.query(Recipe).filter_by(uid=uid).one()
-        links = [
-            {"title": "Edit This", "route_name": "recipe_edit", "uid": uid},
-            {"title": "Add a Recipe", "route_name": "recipe_add"},
-        ]
-        tags = self.get_recipe_tags(recipe)
-        return {"item": dict(recipe=recipe, tags=tags), "links": links}
 
     @view_config(route_name="recipe_edit", renderer="templates/recipe_add_edit.jinja2")
     def recipe_edit(self):
@@ -200,7 +217,7 @@ class RecipeViews(object):
             self.add_recipe_tags(recipe, appstruct["tags"])
 
             recipe["rank"] = int(appstruct["rank"])
-            url = self.request.route_url("recipe_view", uid=uid)
+            url = self.request.route_url("recipe_edit_image", uid=uid)
             return HTTPFound(url)
 
         appstruct = {
@@ -218,7 +235,70 @@ class RecipeViews(object):
             appstruct["rank"] = recipe.rank
 
         form = recipe_form.render(appstruct)
+
         return dict(recipe=recipe, form=form)
+
+    @view_config(route_name="recipe_edit_image", renderer="templates/recipe_edit_image.jinja2")
+    def recipe_edit_image(self):
+        uid = int(self.request.matchdict["uid"])
+        recipe = DBSession.query(Recipe).filter_by(uid=uid).one()
+        recipe_image_form = self.recipe_image_form(recipe.image_path)
+
+        if "upload_new_image" in self.request.params or "upload_image" in self.request.params:
+            print("UPLOAD NEW IMAGE")
+            controls = self.request.POST.items()
+            try:
+                appstruct = recipe_image_form.validate(controls)
+            except deform.ValidationFailure as e:
+                return dict(recipe=recipe, form=e.render())
+            
+            self.add_recipe_image(recipe, appstruct['image'])
+            url = self.request.route_url("recipe_view", uid=uid)
+            return HTTPFound(url)
+
+        if "keep_existing_image" in self.request.params or "skip" in self.request.params:
+            print("KEEP IMAGE")
+            url = self.request.route_url("recipe_view", uid=uid)
+            return HTTPFound(url)
+        
+        if "delete_image" in self.request.params:
+            print("DELETE IMAGE")
+            if recipe.image_path:
+                delete_image(recipe.image_path)
+                recipe.image_path = None
+
+            url = self.request.route_url("recipe_view", uid=uid)
+            return HTTPFound(url)
+        
+        form = recipe_image_form.render()
+        
+        image = self.get_recipe_image_url(recipe)
+        question = "Would you like to edit the image?" if recipe.image_path else "Would you like to add an image?"
+        template_data = dict(recipe=recipe, form=form, question=question)
+        
+        if image:
+            template_data['image'] = image        
+
+        return template_data
+
+
+    @view_config(route_name="recipe_view", renderer="templates/recipe_view.jinja2")
+    def recipe_view(self):
+        uid = int(self.request.matchdict["uid"])
+        recipe = DBSession.query(Recipe).filter_by(uid=uid).one()
+        links = [
+            {"title": "Edit This", "route_name": "recipe_edit", "uid": uid},
+            {"title": "Add a Recipe", "route_name": "recipe_add"},
+        ]
+        tags = self.get_recipe_tags(recipe)
+        image = self.get_recipe_image_url(recipe)
+        recipe_item = dict(recipe=recipe, tags=tags)
+
+        if image:
+            print('>> Serving image: {}'.format(image))
+            recipe_item['image'] = image
+
+        return dict(item=recipe_item, links=links)
 
     @view_config(route_name="search_recipes", renderer="templates/recipe_search.jinja2")
     def search_recipes(self):
