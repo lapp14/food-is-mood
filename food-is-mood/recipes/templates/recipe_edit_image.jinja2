@@ -34,7 +34,11 @@
   <hr/>
 
   <h3>{{question}}</h3>
+  
+  {% if image is defined %}
   <img src="{{image}}" style="width: 240px;"/>
+  {% endif %}
+  
   <p>{{form|safe}}</p>  
 </body>
 </html>

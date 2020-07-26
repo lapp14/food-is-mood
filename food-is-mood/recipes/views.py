@@ -51,7 +51,7 @@ def add_user(request):
         if new_user is user:
             log.debug("add_user(): New user added, {new_user}".format(new_user=new_user))
             print("New user added, {new_user}".format(new_user=new_user))
-
+        
         all_users = session.query(User.first_name, User.last_name).all()
 
     return Response("<pre>" + "\n".join(map(str, all_users)) + "</pre>")
@@ -242,13 +242,7 @@ class RecipeViews(object):
     def recipe_edit_image(self):
         uid = int(self.request.matchdict["uid"])
         recipe = DBSession.query(Recipe).filter_by(uid=uid).one()
-
-        question = "Would you like to edit the image?" if recipe.image_path else "Would you like to add an image?"
-
         recipe_image_form = self.recipe_image_form(recipe.image_path)
-        print('\n\n\n\n\n\n\n\n')
-        print(self.request.params)
-        print('\n\n\n\n\n\n\n\n')
 
         if "upload_new_image" in self.request.params or "upload_image" in self.request.params:
             print("UPLOAD NEW IMAGE")
@@ -256,7 +250,7 @@ class RecipeViews(object):
             try:
                 appstruct = recipe_image_form.validate(controls)
             except deform.ValidationFailure as e:
-                return dict(page=recipe, form=e.render())
+                return dict(recipe=recipe, form=e.render())
             
             self.add_recipe_image(recipe, appstruct['image'])
             url = self.request.route_url("recipe_view", uid=uid)
@@ -278,7 +272,14 @@ class RecipeViews(object):
         
         form = recipe_image_form.render()
         
-        return dict(recipe=recipe, form=form, image=self.get_recipe_image_url(recipe), question=question)
+        image = self.get_recipe_image_url(recipe)
+        question = "Would you like to edit the image?" if recipe.image_path else "Would you like to add an image?"
+        template_data = dict(recipe=recipe, form=form, question=question)
+        
+        if image:
+            template_data['image'] = image        
+
+        return template_data
 
 
     @view_config(route_name="recipe_view", renderer="templates/recipe_view.jinja2")
@@ -291,8 +292,13 @@ class RecipeViews(object):
         ]
         tags = self.get_recipe_tags(recipe)
         image = self.get_recipe_image_url(recipe)
-        print('>> Serving image: {}'.format(image))
-        return {'item': dict(recipe=recipe, tags=tags, image=image), 'links': links}
+        recipe_item = dict(recipe=recipe, tags=tags)
+
+        if image:
+            print('>> Serving image: {}'.format(image))
+            recipe_item['image'] = image
+
+        return dict(item=recipe_item, links=links)
 
     @view_config(route_name="search_recipes", renderer="templates/recipe_search.jinja2")
     def search_recipes(self):

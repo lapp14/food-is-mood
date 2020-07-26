@@ -1,7 +1,17 @@
 import colander, deform.widget
+
+from .images import verify_image
 from deform.interfaces import FileUploadTempStore
 from deform.template import ZPTTemplateLoader, ZPTRendererFactory
 
+def validate_image_upload_form(node, image):
+    print('VALIDATING the image form')
+    print(image)
+    try:
+        verify_image(image)
+    except Exception as e:
+        raise colander.Invalid(node, str(e))
+    
 
 class RecipeIngredient(colander.MappingSchema):
     ingredient = colander.SchemaNode(colander.String())
@@ -44,7 +54,8 @@ class RecipePage(colander.MappingSchema):
 
 class RecipeImageUploadPage(colander.MappingSchema):
     tmpstore = FileUploadMemoryTempStore()
-    image_upload_widget = deform.widget.FileUploadWidget(tmpstore, template="recipes:templates/deform/image_upload.pt")
-    image = colander.SchemaNode(deform.FileData(), widget=image_upload_widget, title="Upload Image", missing=None)
+    # to switch to custom templates add `template="recipes:templates/deform/image_upload.pt"` to widget
+    image_upload_widget = deform.widget.FileUploadWidget(tmpstore)
+    image = colander.SchemaNode(deform.FileData(), validator=validate_image_upload_form, widget=image_upload_widget, title="Upload Image")
 
 

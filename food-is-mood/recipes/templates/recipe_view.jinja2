@@ -21,7 +21,9 @@
       {% endfor %}
     </div>
 
+    {% if item.image is defined %}
     <img src="{{item.image}}" class="recipe-image"/>
+    {% endif %}
 
     <h2>Ingredients</h2>
     <ul class="ingredients">
