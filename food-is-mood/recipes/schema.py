@@ -48,9 +48,11 @@ class RecipePage(colander.MappingSchema):
     description = colander.SchemaNode(colander.String(), widget=deform.widget.TextAreaWidget())
     ingredients = RecipeIngredients()
     steps = RecipeSteps()
-    tags = RecipeTags()
+    #tags = RecipeTags()
     rank = colander.SchemaNode(colander.Int(), validator=colander.Range(1, 5))
 
+class RecipeTagsPage(colander.MappingSchema):
+    json_data = colander.SchemaNode(colander.String(), encoding="utf-8", missing=colander.drop)
 
 class RecipeImageUploadPage(colander.MappingSchema):
     tmpstore = FileUploadMemoryTempStore()

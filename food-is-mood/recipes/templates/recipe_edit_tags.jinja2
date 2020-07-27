@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Food is Mood - Recipe Tags</title>
+    <link rel="shortcut icon" href="{{request.static_url('recipes:static/favicon.ico')}}" />
+    <link rel="stylesheet"
+          href="{{request.static_url('deform:static/css/bootstrap.min.css')}}"
+          type="text/css" media="screen" charset="utf-8"/>
+    <link rel="stylesheet"
+          href="{{request.static_url('deform:static/css/form.css')}}"
+          type="text/css"/>
+
+    <link rel="stylesheet" href="{{request.static_url('recipes:static/app.css')}}"/>
+    <link rel="stylesheet" href="{{request.static_url('recipes:static/edit-form.css')}}"/>
+
+    {% for reqt in view.reqts['css'] %}
+        <link rel="stylesheet" type="text/css" href="{{request.static_url(reqt)}}"/>
+    {% endfor %}
+    <script src="{{request.static_url('deform:static/scripts/jquery-2.0.3.min.js')}}"
+            type="text/javascript"></script>
+    <script src="{{request.static_url('deform:static/scripts/bootstrap.min.js')}}"
+            type="text/javascript"></script>
+
+    {% for reqt in view.reqts['js'] %}
+        <script src="{{request.static_url(reqt)}}"
+                type="text/javascript"></script>
+    {% endfor %}
+</head>
+<body>
+  {% include 'components/nav.jinja2' %}
+<div class="content">
+  <h1>{{recipe.title}}</h1>
+  <p>{{recipe.description}}</p>
+  <hr/>
+
+  <h3>{{question}}</h3>
+  <div class="recipe-tags">
+    {% for tag in tags %}
+      <span tag-value="{{tag.tag}}">
+        {{tag.tag}} 
+        <i onclick="deleteTag(this)">X</i>
+      </span>
+    {% endfor %}
+  </div>
+  
+  <label for="search-tags">Search / Add Tags</label>
+  <input type="text" name="search-tags" class="search-tags" id="search-tags-text"
+        oninput="searchOnTextChange(this, '/search_tags/')"/>
+  <div class="selectable-items" id="search-tags__selectable-items">
+
+  </div>
+  
+  <p>{{form|safe}}</p>  
+
+  <style>
+    div.recipe-tags {
+      margin: 2rem;
+      padding: 1rem;
+      border: 1px solid #333;
+    }
+    div.recipe-tags span {
+      margin-right: 1rem;
+    }
+  </style>
+
+  <script>
+    let recipeTags = { "tags": [{% for tag in tags %}'{{tag.tag}}', {% endfor %}] };
+
+    // TODO: Refactor this outside
+    const searchOnTextChange = async (textInput, endpoint) => {
+      const jsonBody = { 
+        title: textInput.value || '', 
+        selectedTags: recipeTags.tags
+      };
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(jsonBody)
+      }).then(function(response) {
+          return response.text();
+      }).then(function(html) {
+          document.querySelector('#search-tags__selectable-items').innerHTML = html;
+      });
+    }
+
+    const selectTag = (tag) => {
+      if (!tag) {
+        tag = document.getElementById('search-tags-text').value;
+      }
+
+      recipeTags.tags.push(tag);
+      const newTag = document.createElement('span');
+      const close = document.createElement('i');
+
+      newTag.textContent = tag + ' ';
+      newTag.setAttribute('tag-value', tag);
+
+      close.textContent = 'X';
+      close.setAttribute('onclick', 'deleteTag(this)');
+      close.onclick = function() { deleteTag(this) };
+      
+      newTag.appendChild(close);
+      document.querySelector(".recipe-tags").appendChild(newTag)
+    }
+
+    const deleteTag = (element) => {
+      const tag = element.parentNode;
+      const tagValue = tag.getAttribute('tag-value');
+      const index = recipeTags.tags.indexOf(tagValue);
+
+      if (index > -1) {
+        recipeTags.tags.splice(index, 1);
+        tag.parentElement.removeChild(tag);
+        console.log(recipeTags)
+      } else {
+        throw new Error(`Cant locate tag-value ${tagValue} in recipeTags list`);
+      }
+    }
+
+    searchOnTextChange(document.getElementById('search-tags-text'), '/search_tags/');
+  </script>
+</body>
+</html>

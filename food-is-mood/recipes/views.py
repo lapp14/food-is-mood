@@ -1,9 +1,10 @@
-import logging, deform.widget, json, os
+import colander, logging, deform.widget, json, os
+import pyramid.httpexceptions as exc
 from contextlib import contextmanager
 
 from pyramid.httpexceptions import HTTPNotFound
 
-from recipes.schema import RecipePage, RecipeImageUploadPage
+from recipes.schema import RecipePage, RecipeImageUploadPage, RecipeTagsPage
 from sqlalchemy.orm.exc import NoResultFound
 
 from .engine import User, Engine
@@ -143,8 +144,11 @@ class RecipeViews(object):
 
     @property
     def recipe_form(self):
-        schema = RecipePage()
-        return deform.Form(schema, buttons=("submit",))
+        return deform.Form(schema=RecipePage(), buttons=("submit",))
+
+    @property
+    def recipe_tags_form(self):   
+        return deform.Form(schema=RecipeTagsPage(), buttons=("save", "skip",))
 
     def recipe_image_form(self, image_path):
         schema = RecipeImageUploadPage()
@@ -188,8 +192,7 @@ class RecipeViews(object):
             page = DBSession.query(Recipe).filter_by(title=new_title).one()
             new_uid = page.uid
 
-            # Now visit new page
-            url = self.request.route_url("recipe_edit_image", uid=new_uid)
+            url = self.request.route_url("recipe_edit_tags", uid=new_uid)
             return HTTPFound(url)
 
         return dict(form=form)
@@ -217,7 +220,7 @@ class RecipeViews(object):
             self.add_recipe_tags(recipe, appstruct["tags"])
 
             recipe["rank"] = int(appstruct["rank"])
-            url = self.request.route_url("recipe_edit_image", uid=uid)
+            url = self.request.route_url("recipe_edit_tags", uid=uid)
             return HTTPFound(url)
 
         appstruct = {
@@ -242,7 +245,6 @@ class RecipeViews(object):
     def recipe_edit_image(self):
         uid = int(self.request.matchdict["uid"])
         recipe = DBSession.query(Recipe).filter_by(uid=uid).one()
-        recipe_image_form = self.recipe_image_form(recipe.image_path)
 
         if "upload_new_image" in self.request.params or "upload_image" in self.request.params:
             print("UPLOAD NEW IMAGE")
@@ -270,17 +272,34 @@ class RecipeViews(object):
             url = self.request.route_url("recipe_view", uid=uid)
             return HTTPFound(url)
         
+        recipe_image_form = self.recipe_image_form(recipe.image_path)
         form = recipe_image_form.render()
         
         image = self.get_recipe_image_url(recipe)
         question = "Would you like to edit the image?" if recipe.image_path else "Would you like to add an image?"
-        template_data = dict(recipe=recipe, form=form, question=question)
+        template_data = dict(form=form, recipe=recipe, question=question)
         
         if image:
             template_data['image'] = image        
 
         return template_data
 
+    @view_config(route_name="recipe_edit_tags", renderer="templates/recipe_edit_tags.jinja2")
+    def recipe_edit_tags(self):
+        uid = int(self.request.matchdict["uid"])
+        recipe = DBSession.query(Recipe).filter_by(uid=uid).one()
+
+        if "save" in self.request.params:
+            print("UPDATE THE TAGS")
+        
+        tags = self.get_recipe_tags(recipe)
+        recipe_tags_form = self.recipe_tags_form
+        form = recipe_tags_form.render()
+
+        question = "Add some tags to your recipe!" if tags else "Would you like to edit the recipe tags?"
+        template_data = dict(form=form, recipe=recipe, tags=tags, question=question)   
+
+        return template_data
 
     @view_config(route_name="recipe_view", renderer="templates/recipe_view.jinja2")
     def recipe_view(self):
@@ -317,3 +336,28 @@ class RecipeViews(object):
             {"recipe": recipe, "tag_names": self.get_recipe_tags(recipe)} for recipe in recipes
         ]
         return dict(recipes=recipes)
+
+    @view_config(route_name="search_tags", renderer="templates/tag_search.jinja2")
+    def search_tags(self):
+        tag_name = self.request.json_body.get("title", "").strip()
+        selected_tags = self.request.json_body.get("selectedTags", [])
+
+        if not isinstance(selected_tags, list):
+            raise exc.HTTPBadRequest('Parameter selected_tags is not valid')
+
+        if not tag_name:
+            return dict()
+
+        tags = (
+            DBSession.query(Tag)
+            .filter(Tag.tag.contains(tag_name))
+            .filter(Tag.tag.notin_(selected_tags))
+            .order_by(Tag.tag)
+            .limit(self.SEARCH_LIMIT)
+        )
+
+        if tags.count() <= 0:
+            return dict()
+
+        tags = [tag.tag for tag in tags]
+        return dict(tags=tags)

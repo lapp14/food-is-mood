@@ -1,0 +1,9 @@
+{% if tags is defined %}
+<ul>
+  {% for tag in tags %}
+  <li><a href="#" onclick="selectTag('{{tag}}')">{{tag}}</a></li>
+  {% endfor %}
+</ul>
+{% else %}
+<button onclick="selectTag()">Add new tag</button>
+{% endif %}
