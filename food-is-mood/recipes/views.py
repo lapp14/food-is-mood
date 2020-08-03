@@ -329,7 +329,7 @@ class RecipeViews(object):
             return dict()
 
         recipes = [
-            {"recipe": recipe, "tag_names": self.get_recipe_tags(recipe)} for recipe in recipes
+            {"recipe": recipe, "image": self.get_recipe_image_url(recipe), "tag_names": self.get_recipe_tags(recipe)} for recipe in recipes
         ]
         return dict(recipes=recipes)
 

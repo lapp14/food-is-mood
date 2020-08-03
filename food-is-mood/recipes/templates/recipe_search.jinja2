@@ -3,10 +3,13 @@
   <div class="recipe-list-item">
     <a href="{{request.route_url('recipe_view', uid=item.recipe.uid)}}">
       <h2>{{item.recipe.title}}</h2>
-      {% include 'components/star_rating.jinja2' %}
       <p>
-        {{item.recipe.description|safe}}
+        {{item.recipe.description}}
       </p>
+      {% if item.image is defined %}
+      <img src="{{item.image}}" class="recipe-image"/>
+      {% endif %}
+      {% include 'components/star_rating.jinja2' %}
       <div class="recipe-tags">
         {% for tag in item.tag_names %}
           <span>{{tag.tag}}</span>

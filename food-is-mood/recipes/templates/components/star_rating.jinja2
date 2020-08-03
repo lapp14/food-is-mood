@@ -1,5 +1,5 @@
 {% if item.recipe.rank %}
-  <span class="recipe-rating">
+  <div class="recipe-rating">
   <!-- 
       Icons used from Hand Drawn Web Icon Set, Pawel Kadysz, Founder of 177DESIGNS 
       author page: http://177icons.com/hand-drawn-web-icon-set
@@ -11,5 +11,5 @@
   {% for n in range(5 - item.recipe.rank) %}
     <img src="{{request.static_url('recipes:img/iconfinder_star_empty_66881.png')}}" />
   {% endfor %}
-  </span>
+  </div>
 {% endif %}
