@@ -1,4 +1,4 @@
-import colander, deform.widget
+import colander, deform.widget, json
 
 from .images import verify_image
 from deform.interfaces import FileUploadTempStore
@@ -51,8 +51,20 @@ class RecipePage(colander.MappingSchema):
     #tags = RecipeTags()
     rank = colander.SchemaNode(colander.Int(), validator=colander.Range(1, 5))
 
-class RecipeTagsPage(colander.MappingSchema):
-    json_data = colander.SchemaNode(colander.String(), encoding="utf-8", missing=colander.drop)
+class RecipeTagsPage(object):
+    MAX_ALLOWED_TAGS = 10
+
+    def validate(self, tags_json):
+        tags = json.loads(tags_json)['tags']
+        
+        if not isinstance(tags, list) or not all(isinstance(item, str) for item in tags):
+            raise Exception('Invalid format') 
+
+        if len(tags) > self.MAX_ALLOWED_TAGS:
+            raise Exception('Too many tags')
+
+        return tags
+        
 
 class RecipeImageUploadPage(colander.MappingSchema):
     tmpstore = FileUploadMemoryTempStore()

@@ -1,3 +1,47 @@
+nav.recipe-edit-subnav {
+  background: #fff;
+  display: flex;
+  margin-bottom: 3rem;
+}
+
+nav.recipe-edit-subnav div {
+  width: 100%;
+  text-align: center;
+  border: none;
+  padding-bottom: 1rem;
+}
+
+nav.recipe-edit-subnav div a {
+  text-decoration: none;
+  color: #333;
+}
+
+nav.recipe-edit-subnav div span {
+  margin: 1rem auto;
+  background:  #acacac;
+  display: block;
+  height: 5rem;
+  width: 5rem;
+  line-height: 5rem;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+  color: #333;
+  text-align: center;
+  font-size: 2.6rem;
+}
+
+nav.recipe-edit-subnav div.active {
+  border-bottom: 0.2rem solid rgb(0, 160, 189);
+}
+
+nav.recipe-edit-subnav div:hover {
+  border-bottom: 0.2rem solid #acacac;
+}
+
+nav.recipe-edit-subnav div.active span {
+  background:  rgb(0, 160, 189);  
+}
+
 div.panel-heading {
 
 }

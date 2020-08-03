@@ -111,7 +111,7 @@ class RecipeViews(object):
     def add_recipe_tags(self, recipe, tags):
         recipe.tags.clear()
         for tag in tags:
-            new_tag = self.add_or_get_tag(tag["tag"])
+            new_tag = self.add_or_get_tag(tag)
             recipe.tags.append(RecipeTag(recipe_id=recipe.uid, tag_id=new_tag.uid))
 
     def add_or_get_tag(self, tag_label):
@@ -145,10 +145,6 @@ class RecipeViews(object):
     @property
     def recipe_form(self):
         return deform.Form(schema=RecipePage(), buttons=("submit",))
-
-    @property
-    def recipe_tags_form(self):   
-        return deform.Form(schema=RecipeTagsPage(), buttons=("save", "skip",))
 
     def recipe_image_form(self, image_path):
         schema = RecipeImageUploadPage()
@@ -195,7 +191,7 @@ class RecipeViews(object):
             url = self.request.route_url("recipe_edit_tags", uid=new_uid)
             return HTTPFound(url)
 
-        return dict(form=form)
+        return dict(form=form, page="add")
 
     @view_config(route_name="recipe_edit", renderer="templates/recipe_add_edit.jinja2")
     def recipe_edit(self):
@@ -239,7 +235,7 @@ class RecipeViews(object):
 
         form = recipe_form.render(appstruct)
 
-        return dict(recipe=recipe, form=form)
+        return dict(recipe=recipe, form=form, page="edit", uid=uid)
 
     @view_config(route_name="recipe_edit_image", renderer="templates/recipe_edit_image.jinja2")
     def recipe_edit_image(self):
@@ -277,7 +273,7 @@ class RecipeViews(object):
         
         image = self.get_recipe_image_url(recipe)
         question = "Would you like to edit the image?" if recipe.image_path else "Would you like to add an image?"
-        template_data = dict(form=form, recipe=recipe, question=question)
+        template_data = dict(form=form, recipe=recipe, question=question, page="image", uid=uid)
         
         if image:
             template_data['image'] = image        
@@ -289,15 +285,15 @@ class RecipeViews(object):
         uid = int(self.request.matchdict["uid"])
         recipe = DBSession.query(Recipe).filter_by(uid=uid).one()
 
-        if "save" in self.request.params:
-            print("UPDATE THE TAGS")
+        if "tags_json" in self.request.POST:
+            tags = RecipeTagsPage().validate(tags_json=self.request.POST['tags_json'])
+            self.add_recipe_tags(recipe, tags)
+            url = self.request.route_url("recipe_edit_image", uid=uid)
+            return HTTPFound(url)
         
-        tags = self.get_recipe_tags(recipe)
-        recipe_tags_form = self.recipe_tags_form
-        form = recipe_tags_form.render()
-
+        tags = self.get_recipe_tags(recipe)       
         question = "Add some tags to your recipe!" if tags else "Would you like to edit the recipe tags?"
-        template_data = dict(form=form, recipe=recipe, tags=tags, question=question)   
+        template_data = dict(recipe=recipe, tags=tags, question=question, page="tags", uid=uid, max_tags=RecipeTagsPage.MAX_ALLOWED_TAGS)   
 
         return template_data
 
