@@ -13,7 +13,7 @@ Recipe book project. Currently using SQLite as db.
   - run `initialize_recipes_db dev.ini` to create database and tables
 
 ### Environment vars
-The following environment vars are required
+The following environment vars are required:
 ```
 AWS_ACCESS_KEY_ID=""
 AWS_SECRET_ACCESS_KEY=""
