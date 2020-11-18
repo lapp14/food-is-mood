@@ -13,15 +13,19 @@ Recipe book project. Currently using SQLite as db.
   - run `initialize_recipes_db dev.ini` to create database and tables
 
 ### Environment vars
-The following environment vars are required:
+The following environment vars are required
 ```
 AWS_ACCESS_KEY_ID=""
 AWS_SECRET_ACCESS_KEY=""
-AWS_S3_BUCKET_NAME=""
+AWS_S3_BUCKET_NAME="food-is-mood"
 AWS_S3_BUCKET_URL=""
-AWS_S3_BASE_PATH=""
+AWS_S3_BASE_PATH="dev/"
 AWS_S3_BASE_URL=""
 ```
+
+### `.ini` files
+The ini files are used as pyramid config. In production, logging levels of `WARN` can be useful.
+For production, specify `host` and `port` under `[server:main]`
 
 ### Running dev server
   - activate venv with `source venv/bin/activate`

@@ -3,4 +3,6 @@
 venv/
 tmp/
 __pycache__/
-food-is-mood/recipes.egg-info/
+recipes.egg-info/
+prod.ini
+
