@@ -7,7 +7,7 @@ Recipe book project. Currently using SQLite as db.
   - python3 -m venv venv
   - source venv/bin/activate
   - Install requirements with `pip install -r requirements.txt`
-  - Install dev dependencies with `pip install -e ./food-is-mood/."[dev]"`
+  - (Optional) Install dev dependencies with `pip install -e ./food-is-mood/."[dev]"`
   
 ### Initialize test SQLite database
   - run `initialize_recipes_db dev.ini` to create database and tables
