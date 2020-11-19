@@ -6,10 +6,10 @@ Recipe book project. Currently using SQLite as db.
   - install python3-venv
   - python3 -m venv venv
   - source venv/bin/activate
-  - pip install -e ./food-is-mood/."[dev]"
+  - Install requirements with `pip install -r requirements.txt`
+  - (Optional) Install dev dependencies with `pip install -e ./food-is-mood/."[dev]"`
   
 ### Initialize test SQLite database
-  - cd to `./food-is-mood/`
   - run `initialize_recipes_db dev.ini` to create database and tables
 
 ### Environment vars
@@ -17,30 +17,36 @@ The following environment vars are required
 ```
 AWS_ACCESS_KEY_ID=""
 AWS_SECRET_ACCESS_KEY=""
-AWS_S3_BUCKET_NAME=""
+AWS_S3_BUCKET_NAME="food-is-mood"
 AWS_S3_BUCKET_URL=""
-AWS_S3_BASE_PATH=""
+AWS_S3_BASE_PATH="dev/"
 AWS_S3_BASE_URL=""
 ```
 
+### `.ini` files
+The ini files are used as pyramid config. In production, logging levels of `WARN` can be useful.
+For production, specify `host` and `port` under `[server:main]`
+
 ### Running dev server
   - activate venv with `source venv/bin/activate`
-  - run `pserve ./food-is-mood/dev.ini --reload `
+  - run `pserve dev.ini --reload `
   - load [0.0.0.0:6543](http://0.0.0.0:6543/)
   
 ### Running tests
-  - run `pytest food-is-mood/recipes/tests.py`
+  - run `pytest recipes/tests.py`
 
 ### Formatting
   - Format python files by running `black food-is-mood/*.py`
   
 ## Docker
-### localhost
   - docker build .
-  - docker run --network="host" -p 6543:6543
+  - docker run -p 6543:6543 <docker_id> 
   
 
 ## Notes
+
+Sometimes you need to cd into `recipes/` and run `export PYTHONPATH=.` to fix the module not found error for recipes package
+
 ### Testing json endpoints
 Using `httpie` you can hit the endpoints via command line
 
