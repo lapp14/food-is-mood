@@ -39,9 +39,8 @@ For production, specify `host` and `port` under `[server:main]`
   - Format python files by running `black food-is-mood/*.py`
   
 ## Docker
-### localhost
   - docker build .
-  - docker run --network="host" -p 6543:6543
+  - docker run -p 6543:6543 <docker_id> 
   
 
 ## Notes
