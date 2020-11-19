@@ -4,5 +4,6 @@ venv/
 tmp/
 __pycache__/
 recipes.egg-info/
+recipes.sqlite
 prod.ini
 
