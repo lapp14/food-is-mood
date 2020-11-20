@@ -40,8 +40,8 @@ For production, specify `host` and `port` under `[server:main]`
   
 ## Docker
   - docker build .
-  - docker run -p 6543:6543 <docker_id> 
-  
+  - docker run -d --name food-is-mood  -p 6543:6543 -v /home/dan/public_html/food-is-mood/:/app/ <container-id>
+ 
 
 ## Notes
 

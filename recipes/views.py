@@ -215,7 +215,6 @@ class RecipeViews(object):
 
             self.add_recipe_ingredients(recipe, appstruct["ingredients"])
             self.add_recipe_steps(recipe, appstruct["steps"])
-            self.add_recipe_tags(recipe, appstruct["tags"])
 
             recipe["rank"] = int(appstruct["rank"])
             url = self.request.route_url("recipe_edit_tags", uid=uid)
