@@ -11,21 +11,20 @@
   <div class="content">
     <h1 class="recipe-title">{{item.recipe.title}}</h1>
 
-    {% include 'components/star_rating.jinja2' %}
-
     <p>{{item.recipe.description|safe}}</p>
 
+    {% if item.image is defined %}
+    <img src="{{item.image}}" class="recipe-image"/>
+    {% endif %}
+
+    {% include 'components/star_rating.jinja2' %}
     <div class="recipe-tags">
       {% for tag in item.tags %}
         <span>{{tag.tag}}</span>
       {% endfor %}
     </div>
 
-    {% if item.image is defined %}
-    <img src="{{item.image}}" class="recipe-image"/>
-    {% endif %}
-
-    <h2>Ingredients</h2>
+    <h2 style="margin-top: 2rem">Ingredients</h2>
     <ul class="ingredients">
     {% for ingredient in item.recipe.ingredients %}
       <li>{{ingredient.ingredient}}</li>

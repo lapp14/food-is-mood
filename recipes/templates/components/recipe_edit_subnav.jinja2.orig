@@ -1,0 +1,19 @@
+{% if recipe is defined %}
+<nav class="recipe-edit-subnav">
+  <div class="recipe-edit-subnav {% if page == 'edit' %} active {% endif %}">
+    <a href="{% if page == 'edit' %}#{% else %}{{request.route_url('recipe_edit', uid=uid)}}{% endif %}">
+      <span>1</span>Edit Recipe
+    </a>
+  </div>
+  <div class="tags-edit-subnav {% if page == 'tags' %} active {% endif %}">
+    <a href="{% if page == 'tags' %}#{% else %}{{request.route_url('recipe_edit_tags', uid=uid)}}{% endif %}">
+      <span>2</span>Recipe Tags
+    </a>
+  </div>
+  <div class="image-edit-subnav {% if page == 'image' %} active {% endif %}">
+    <a href="{% if page == 'image' %}#{% else %}{{request.route_url('recipe_edit_image', uid=uid)}}{% endif %}">
+      <span>3</span>Recipe Image
+    </a>
+  </div>
+</nav>
+{% endif %}

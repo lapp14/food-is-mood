@@ -29,7 +29,13 @@
 <body>
   {% include 'components/nav.jinja2' %}
 <div class="content">
+  {% include 'components/recipe_edit_subnav.jinja2' %}
+  
+  {% if recipe is defined %}
+  <h1>Add Recipe:</h1>
+  {% else %}
   <h1>Edit Recipe:</h1>
+  {% endif %}
   <p>{{form|safe}}</p>
 </body>
 </html>
