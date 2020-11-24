@@ -4,13 +4,16 @@ import string
 import tarfile
 import shutil
 import boto3
-from boto3.s3.connection import S3Connection
-from boto3.s3.key import Key
+from botocore.exceptions import ClientError
 from datetime import timedelta
 
 # Configuration inlcudes of AWS credentials, db.sqlite3 file and local backup path
 # note: first you need to store this script where your db.sqlite3 db is located
 # Then you can run the script "python sqlite_bck.py
+
+ARGS = {
+    'ACL': 'private'
+}
 
 aws_access_key = os.environ['AWS_ACCESS_KEY_ID']
 aws_secret_key = os.environ['AWS_SECRET_ACCESS_KEY']
@@ -38,17 +41,17 @@ full_archive_file_path = archieve_path + ".tar.gz"
 full_archive_name = archieve_name + ".tar.gz"
 
 # Establish S3 Connection
-s3 = S3Connection(aws_access_key, aws_secret_key)
-bucket = s3.get_bucket(aws_bucket)
+# s3 = boto3.resource('s3')
+# bucket = s3.bucket(aws_bucket) # bucket = s3.get_bucket(aws_bucket)
 
 # Send files to S3
 print ('[S3] Uploading file archive ' + full_archive_name + '...')
-k = Key(bucket)
-k.key = aws_folder + '/' + today + '/' + full_archive_name
-print(k.key)
-k.set_contents_from_filename(full_archive_file_path)
-k.set_acl("public-read")
-# os.system(cmd)
+archive_path = aws_folder + '/' + today + '/' + full_archive_name
+
+s3 = boto3.client('s3')
+with open(full_archive_file_path, "rb") as f:
+    response = s3.upload_fileobj(f, aws_bucket, archive_path, ExtraArgs=ARGS)
+    print(response)
 
 print('[S3] Clearing previous file archive ' + full_archive_name + '...')
 shutil.rmtree(path)
