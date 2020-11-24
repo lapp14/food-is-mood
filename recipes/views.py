@@ -185,8 +185,7 @@ class RecipeViews(object):
 
             self.add_recipe_ingredients(recipe, appstruct["ingredients"])
             self.add_recipe_steps(recipe, appstruct["steps"])
-            self.add_recipe_tags(recipe, appstruct["tags"])
-
+            
             page = DBSession.query(Recipe).filter_by(title=new_title).one()
             new_uid = page.uid
 
