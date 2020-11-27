@@ -239,6 +239,7 @@ class RecipeViews(object):
 
     @view_config(route_name="recipe_edit_image", renderer="templates/recipe_edit_image.jinja2")
     def recipe_edit_image(self):
+        recipe_image_form = self.recipe_form.render()
         uid = int(self.request.matchdict["uid"])
         recipe = DBSession.query(Recipe).filter_by(uid=uid).one()
 
